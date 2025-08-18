@@ -228,11 +228,18 @@
         ],
         "responses": {
           "200": {
-            "description": "Contacts retrieved successfully.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GenericResponse"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Contact"
+                      }
+                    }
+                  }
                 }
               }
             }
