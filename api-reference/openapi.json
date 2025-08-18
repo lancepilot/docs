@@ -231,15 +231,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Contact"
-                      }
-                    }
-                  }
+                  "type": "array",
+                  "items": {}
                 }
               }
             }
@@ -371,7 +364,7 @@
           }
         }
       },
-      "GenericResponse": {
+      "Contact": {
         "type": "object",
         "properties": {
           "message": {
