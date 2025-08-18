@@ -1,17 +1,17 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Lancepilot API Docs",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
     "dark": "#15803D"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/logo/logo.svg",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Get Started",
         "groups": [
           {
             "group": "Get Started",
@@ -31,12 +31,13 @@
         ]
       },
       {
-        "tab": "API Reference",
+        "tab": "Endpoints",
         "groups": [
           {
             "group": "API Documentation",
             "pages": ["api-reference/introduction"]
           },
+
           {
             "group": "Endpoint Examples",
             "pages": [
@@ -45,23 +46,25 @@
               "api-reference/endpoint/delete",
               "api-reference/endpoint/webhook"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Endpoints",
-        "groups": [
+          },
+
           {
-            "group": "Endpoints",
+            "group": "Workspace",
             "pages": [
               {
-                "group": "Contacts",
+                "group": "Endpoint Examples",
                 "pages": [
-                  "pages/endpoints/contacts/get"
+                  "api-reference/endpoint/get",
+                  "api-reference/endpoint/create",
+                  "api-reference/endpoint/delete",
+                  "api-reference/endpoint/webhook"
                 ]
               }
             ]
           }
+
+
+
         ]
       }
     ],
@@ -86,8 +89,8 @@
     }
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/logo.svg",
+    "dark": "/logo/logo.svg"
   },
   "navbar": {
     "links": [

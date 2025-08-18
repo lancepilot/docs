@@ -208,6 +208,40 @@
           }
         }
       }
+    },
+    "/workspaces/{workspace}/contacts": {
+      "get": {
+        "summary": "Get contacts in a workspace",
+        "description": "Retrieve all contacts associated with the specified workspace.",
+        "tags": ["Contacts"],
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "description": "ID of the workspace to retrieve contacts from.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contacts retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found: Workspace not found or unauthorized access."
+          }
+        }
+      }
     }
   },
   "components": {
