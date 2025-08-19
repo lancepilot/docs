@@ -59,8 +59,10 @@
             "pages": [
               {
                 "group": "Contacts",
+
                 "pages": [
-                  "pages/endpoints/contacts/get"
+                  "api-reference/contacts/get",
+                  "api-reference/contacts/export"
                 ]
               }
             ]
