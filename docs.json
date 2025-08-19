@@ -41,28 +41,26 @@
             "pages": ["api-reference/introduction"]
           },
           {
-            "group": "Endpoint Examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Endpoints",
-        "groups": [
-          {
             "group": "Endpoints",
             "pages": [
               {
+                "group": "Workspaces",
+                "pages": [
+                  "api-reference/endpoint/get",
+                  "api-reference/endpoint/create",
+                  "api-reference/endpoint/delete",
+                  "api-reference/endpoint/webhook"
+                ]
+              },
+              {
                 "group": "Contacts",
-
                 "pages": [
                   "api-reference/contacts/get",
-                  "api-reference/contacts/export"
+                  "api-reference/contacts/export",
+                  "api-reference/contacts/add",
+                  "api-reference/contacts/get-single",
+                  "api-reference/contacts/update",
+                  "api-reference/contacts/delete"
                 ]
               }
             ]

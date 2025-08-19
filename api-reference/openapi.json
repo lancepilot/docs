@@ -260,7 +260,131 @@
           "401": { "$ref": "#/components/responses/401" }
         }
       },
-      "post": {}
+      "post": {
+        "summary": "Add Contact",
+        "description": "Create a new contact in the specified workspace.",
+        "tags": ["Contacts"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "required": true,
+            "description": "ID of the workspace.",
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Contact creation payload (multipart/form-data).",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Phone number. Must be valid, not a channel, and unique in workspace."
+                  },
+                  "status": {
+                    "type": "boolean",
+                    "nullable": true,
+                    "description": "Boolean status. In multipart, send `1` or `0` for best compatibility.",
+                    "examples": { "enabled": { "value": true } }
+                  },
+                  "name": {
+                    "type": "string",
+                    "nullable": true,
+                    "maxLength": 50,
+                    "description": "Must pass 'valid_name'."
+                  },
+                  "email": {
+                    "type": "string",
+                    "nullable": true,
+                    "format": "email",
+                    "maxLength": 255
+                  },
+                  "avatar": {
+                    "type": "string",
+                    "nullable": true,
+                    "format": "binary",
+                    "description": "Image file (≤ 2MB)."
+                  },
+                  "gender": {
+                    "type": "string",
+                    "nullable": true,
+                    "enum": ["male", "female", "other"]
+                  },
+                  "contact_groups": {
+                    "type": "array",
+                    "nullable": true,
+                    "description": "Array of group IDs. Must exist in workspace and be assignable.",
+                    "items": { "type": "integer", "minimum": 1 },
+                    "examples": { "eg": { "value": [4, 5] } }
+                  },
+                  "fields": {
+                    "type": "object",
+                    "nullable": true,
+                    "description": "Custom fields as key-value pairs. Keys must pre-exist in this workspace (ContactField). Each value ≤ 255 chars.",
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "examples": {
+                      "eg": {
+                        "value": { "linked_in": "https://www.linkedin.com/" }
+                      }
+                    }
+                  }
+                },
+                "required": ["number"]
+              },
+              "encoding": {
+                "avatar": {
+                  "contentType": "image/*"
+                },
+                "contact_groups": {
+                  "style": "form",
+                  "explode": true
+                },
+                "fields": {
+                  "style": "deepObject",
+                  "explode": true
+                },
+                "status": {
+                  "style": "form",
+                  "explode": false
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Contact created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status", "message", "data"],
+                  "properties": {
+                    "status": { "type": "integer", "example": 201 },
+                    "message": {
+                      "type": "string",
+                      "example": "Contact created successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Created contact resource."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
     },
     "/workspaces/{workspace}/contacts/export": {
       "get": {
@@ -324,6 +448,267 @@
               },
               "text/csv": {
                 "schema": { "type": "string", "format": "binary" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/{contact}": {
+      "get": {
+        "summary": "Get Contact",
+        "description": "Retrieve a specific contact by ID.",
+        "tags": ["Contacts"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "description": "ID of the contact.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {}
+                    }
+                  },
+                  "required": ["data"]
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Resource not found"
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    }
+                  },
+                  "required": ["message", "status"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Update Contact",
+        "description": "Update an existing contact in the specified workspace. The contact's number cannot be updated.",
+        "tags": ["Contacts"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "required": true,
+            "description": "ID of the workspace.",
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "required": true,
+            "description": "ID of the contact.",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Contact update payload (multipart/form-data). The contact's number cannot be updated.",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "boolean",
+                    "nullable": true,
+                    "description": "Boolean status. In multipart, send `1` or `0` for best compatibility.",
+                    "examples": { "enabled": { "value": true } }
+                  },
+                  "name": {
+                    "type": "string",
+                    "nullable": true,
+                    "maxLength": 50,
+                    "description": "Must pass 'valid_name'."
+                  },
+                  "email": {
+                    "type": "string",
+                    "nullable": true,
+                    "format": "email",
+                    "maxLength": 255
+                  },
+                  "avatar": {
+                    "type": "string",
+                    "nullable": true,
+                    "format": "binary",
+                    "description": "Image file (≤ 2MB)."
+                  },
+                  "gender": {
+                    "type": "string",
+                    "nullable": true,
+                    "enum": ["male", "female", "other"]
+                  },
+                  "contact_groups": {
+                    "type": "array",
+                    "nullable": true,
+                    "description": "Array of group IDs. Must exist in workspace and be assignable.",
+                    "items": { "type": "integer", "minimum": 1 },
+                    "examples": { "eg": { "value": [4, 5] } }
+                  },
+                  "fields": {
+                    "type": "object",
+                    "nullable": true,
+                    "description": "Custom fields as key-value pairs. Keys must pre-exist in this workspace (ContactField). Each value ≤ 255 chars.",
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "examples": {
+                      "eg": {
+                        "value": { "linked_in": "https://www.linkedin.com/" }
+                      }
+                    }
+                  }
+                }
+              },
+              "encoding": {
+                "avatar": {
+                  "contentType": "image/*"
+                },
+                "contact_groups": {
+                  "style": "form",
+                  "explode": true
+                },
+                "fields": {
+                  "style": "deepObject",
+                  "explode": true
+                },
+                "status": {
+                  "style": "form",
+                  "explode": false
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status", "message", "data"],
+                  "properties": {
+                    "status": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Contact updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Updated contact resource."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Resource not found"
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    }
+                  },
+                  "required": ["message", "status"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Contact",
+        "description": "Delete a contact by ID.",
+        "tags": ["Contacts"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "required": true,
+            "description": "ID of the workspace.",
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "required": true,
+            "description": "ID of the contact.",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Contact deleted successfully."
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    }
+                  },
+                  "required": ["message", "status"]
+                }
               }
             }
           },
