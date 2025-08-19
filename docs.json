@@ -71,19 +71,24 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "Website",
+          "href": "https://lancepilot.com",
+          "icon": "globe"
+        },
+        {
+          "anchor": "Support",
+          "href": "https://api.whatsapp.com/send/?phone=447309574692&text=Hi&type=phone_number&app_absent=0k",
+          "icon": "whatsapp"
         },
         {
           "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
+          "href": "https://discord.gg/fVyJhfnQ",
+          "icon": "discord"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "Live Demo",
+          "href": "https://www.youtube.com/watch?v=AEh8Rq__6B8",
+          "icon": "youtube"
         }
       ]
     }
