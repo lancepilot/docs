@@ -14,31 +14,11 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Get Started",
-        "groups": [
-          {
-            "group": "Get Started",
-            "pages": ["index", "quickstart", "development"]
-          },
-          {
-            "group": "Essentials",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/settings",
-              "essentials/navigation",
-              "essentials/reusable-snippets"
-            ]
-          }
-        ]
-      },
-      {
         "tab": "API Reference",
         "groups": [
           {
             "group": "API Documentation",
-            "pages": ["api-reference/introduction"]
+            "pages": ["index"]
           },
           {
             "group": "Endpoints",
@@ -55,12 +35,22 @@
               {
                 "group": "Contacts",
                 "pages": [
-                  "api-reference/contacts/get",
+                  "api-reference/contacts/list",
                   "api-reference/contacts/export",
                   "api-reference/contacts/add",
-                  "api-reference/contacts/get-single",
+                  "api-reference/contacts/get",
                   "api-reference/contacts/update",
                   "api-reference/contacts/delete"
+                ]
+              },
+              {
+                "group": "Contact Fields",
+                "pages": [
+                  "pages/endpoints/contact-field/list",
+                  "pages/endpoints/contact-field/add",
+                  "pages/endpoints/contact-field/get",
+                  "pages/endpoints/contact-field/update",
+                  "pages/endpoints/contact-field/delete"
                 ]
               }
             ]
@@ -97,19 +87,7 @@
     "light": "/logo/logo.svg",
     "dark": "/logo/logo.svg"
   },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
+  "navbar": {},
   "footer": {
     "socials": {
       "x": "https://x.com/mintlify",

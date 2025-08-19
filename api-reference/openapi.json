@@ -482,45 +482,9 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {}
-                    }
-                  },
-                  "required": ["data"]
-                }
-              }
-            }
-          },
+          "200": { "$ref": "#/components/responses/200" },
           "401": { "$ref": "#/components/responses/401" },
-          "404": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Resource not found"
-                    },
-                    "status": {
-                      "type": "integer",
-                      "example": 404
-                    }
-                  },
-                  "required": ["message", "status"]
-                }
-              }
-            }
-          }
+          "404": { "$ref": "#/components/responses/404" }
         }
       },
       "post": {
@@ -713,6 +677,184 @@
             }
           },
           "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contact-fields": {
+      "get": {
+        "summary": "Contact Fields",
+        "description": "Retrieve all contact fields for a workspace.",
+        "tags": ["Contact Fields"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of contact fields per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Paginate200" },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      },
+      "post": {
+        "summary": "Add Contact Field",
+        "description": "Create a new contact field in the specified workspace.",
+        "tags": ["Contact Fields"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Contact field creation parameters.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Unique name per workspace. Only lowercase letters and underscores allowed."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contact-fields/{contact-field}": {
+      "get": {
+        "summary": "Get Contact Field",
+        "description": "Retrieve a specific contact field by ID.",
+        "tags": ["Contact Fields"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      },
+      "put": {
+        "summary": "Update Contact Field",
+        "description": "Update an existing contact field in the specified workspace.",
+        "tags": ["Contact Fields"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "required": true,
+            "description": "ID of the workspace.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact-field",
+            "in": "path",
+            "required": true,
+            "description": "ID of the contact field.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Unique name per workspace. Only lowercase letters and underscores allowed."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/Update200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      },
+      "delete": {
+        "summary": "Delete Contact Field",
+        "description": "Delete a contact field by ID.",
+        "tags": ["Contact Fields"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "required": true,
+            "description": "ID of the workspace.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact-field",
+            "in": "path",
+            "required": true,
+            "description": "ID of the contact field.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Delete200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
         }
       }
     }
@@ -918,6 +1060,94 @@
           }
         }
       },
+      "Update200": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Resource updated successfully."
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Updated resource data."
+                }
+              },
+              "required": ["status", "message", "data"]
+            }
+          }
+        }
+      },
+      "Delete200": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Resource deleted successfully."
+                },
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                }
+              },
+              "required": ["message", "status"]
+            }
+          }
+        }
+      },
+      "200": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "required": ["data"]
+            }
+          }
+        }
+      },
+      "201": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Resource created successfully."
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Created resource data."
+                }
+              },
+              "required": ["status", "message", "data"]
+            }
+          }
+        }
+      },
       "401": {
         "description": "",
         "content": {
@@ -931,6 +1161,51 @@
                 }
               },
               "required": ["message"]
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Resource not found."
+                },
+                "status": {
+                  "type": "integer",
+                  "example": 404
+                }
+              },
+              "required": ["message", "status"]
+            }
+          }
+        }
+      },
+      "422": {
+        "description": "",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Validation error"
+                },
+                "errors": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  }
+                }
+              },
+              "required": ["message", "errors"]
             }
           }
         }
