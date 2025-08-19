@@ -1,6 +1,6 @@
 {
   "api": {
-    "openapi": "api-reference/openapi.json"
+    "openapi": "openapi/openapi.json"
   },
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
@@ -52,6 +52,16 @@
                   "pages/endpoints/contact-field/update",
                   "pages/endpoints/contact-field/delete"
                 ]
+              },
+              {
+                "group": "Contact Groups",
+                "pages": [
+                  "pages/endpoints/contact-group/list",
+                  "pages/endpoints/contact-group/add",
+                  "pages/endpoints/contact-group/get",
+                  "pages/endpoints/contact-group/update",
+                  "pages/endpoints/contact-group/delete"
+                ]
               }
             ]
           }
@@ -84,12 +94,13 @@
     }
   },
   "logo": {
-    "light": "/logo/logo.svg",
-    "dark": "/logo/logo.svg"
+    "light": "/assets/logo/logo.svg",
+    "dark": "/assets/logo/logo.svg"
   },
   "navbar": {},
   "footer": {
     "socials": {
+      "youtube": "https://www.youtube.com/channel/UCy0gFhDio6Yjz620PdFgxlg",
       "x": "https://x.com/mintlify",
       "github": "https://github.com/mintlify",
       "linkedin": "https://linkedin.com/company/mintlify"
