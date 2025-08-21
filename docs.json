@@ -62,6 +62,14 @@
                   "pages/endpoints/contact-group/update",
                   "pages/endpoints/contact-group/delete"
                 ]
+              },
+              {
+                "group": "Role & Permissions",
+                "pages": [
+                  "pages/endpoints/role-and-permissions/get-permissions",
+                  "pages/endpoints/role-and-permissions/get-roles"
+                 
+                ]
               }
             ]
           }

@@ -1036,6 +1036,106 @@
           "404": { "$ref": "#/components/responses/404" }
         }
       }
+    },
+    "/workspaces/{workspace}/permissions": {
+      "get": {
+        "summary": "Get Permissions",
+        "description": "Retrieve the permissions for the specified workspace.",
+        "tags": ["Permissions"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": ["data"]
+                },
+                "examples": {
+                  "permissions": {
+                    "value": {
+                      "data": [
+                        {
+                          "group-1": []
+                        },
+                        {
+                          "group-2": []
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/roles-all": {
+      "get": {
+        "summary": "Get All Roles",
+        "description": "Retrieve all roles available in the specified workspace.",
+        "tags": ["Roles"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["data"],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
     }
   },
   "components": {
