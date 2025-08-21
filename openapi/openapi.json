@@ -1714,6 +1714,198 @@
           "404": { "$ref": "#/components/responses/404" }
         }
       }
+    },
+    "/workspaces/{workspace}/channel": {
+      "get": {
+        "summary": "Get Channel",
+        "description": "Retrieve the channel for the specified workspace.",
+        "tags": ["Channel"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/200" },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/channel/wallet/transactions": {
+      "get": {
+        "summary": "Get Wallet Transactions",
+        "description": "Retrieve wallet transactions for the specified workspace.",
+        "tags": ["Wallet Transactions"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of transactions per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Paginate200" },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/channel/wallet/transactions/{transaction}/invoice": {
+      "get": {
+        "summary": "Download Wallet Transaction Invoice",
+        "description": "Download the invoice for a specific wallet transaction as a PDF file.",
+        "tags": ["Wallet Transactions"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "transaction",
+            "in": "path",
+            "description": "ID of the wallet transaction.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PDF invoice file.",
+            "headers": {
+              "Content-Disposition": {
+                "description": "Indicates file download.",
+                "schema": { "type": "string" },
+                "example": "attachment; filename=\"invoice.pdf\""
+              }
+            },
+            "content": {
+              "application/pdf": {
+                "schema": { "type": "string", "format": "binary" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/channel/wallet/conversations": {
+      "get": {
+        "summary": "Get Wallet Conversation List",
+        "description": "Retrieve the conversation list for the specified workspace's wallet.",
+        "tags": ["Wallet Conversations"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of conversations per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Paginate200" },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/channel/wallet/refresh": {
+      "post": {
+        "summary": "Refresh Wallet Channel",
+        "description": "Refresh the wallet channel for the specified workspace.",
+        "tags": ["Wallet Channel"],
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/200" },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/channel/wallet/transfer": {
+      "get": {
+        "summary": "Get Transfer List",
+        "description": "Retrieve wallet transfer details for the specified workspace.",
+        "tags": ["Wallet Transfer"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of transfers per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Paginate200" },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
     }
   },
   "components": {

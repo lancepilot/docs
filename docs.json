@@ -44,6 +44,17 @@
                 ]
               },
               {
+                "group": "Channel & Wallet",
+                "pages": [
+                  "pages/endpoints/channel/get",
+                  "pages/endpoints/channel/wallet/transactions",
+                  "pages/endpoints/channel/wallet/invoice",
+                  "pages/endpoints/channel/wallet/conversation",
+                  "pages/endpoints/channel/wallet/refresh",
+                  "pages/endpoints/channel/wallet/transfer"
+                ]
+              },
+              {
                 "group": "Contact Fields",
                 "pages": [
                   "pages/endpoints/contact-field/list",
@@ -61,6 +72,16 @@
                   "pages/endpoints/contact-group/get",
                   "pages/endpoints/contact-group/update",
                   "pages/endpoints/contact-group/delete"
+                ]
+              },
+              {
+                "group": "Contact Imports",
+                "pages": [
+                  "pages/endpoints/contact-import/list",
+                  "pages/endpoints/contact-import/add",
+                  "pages/endpoints/contact-import/get",
+                  "pages/endpoints/contact-import/update",
+                  "pages/endpoints/contact-import/delete"
                 ]
               },
               {
