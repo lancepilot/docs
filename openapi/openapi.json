@@ -1136,6 +1136,464 @@
           "401": { "$ref": "#/components/responses/401" }
         }
       }
+    },
+    "/workspaces/{workspace}/users": {
+      "get": {
+        "summary": "Get Users in Workspace",
+        "description": "Retrieve all users associated with the specified workspace.",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of users per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Paginate200" },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      },
+      "post": {
+        "summary": "Add User to Workspace",
+        "description": "Create a new user in the specified workspace.",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "User creation payload (multipart/form-data).",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "avatar": {
+                    "type": "string",
+                    "nullable": true,
+                    "format": "binary",
+                    "description": "Image file (≤ 1MB)."
+                  },
+                  "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "description": "Required. Must pass 'valid_name'."
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Required. Must be unique."
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 255,
+                    "description": "Required."
+                  },
+                  "confirm_password": {
+                    "type": "string",
+                    "description": "Required. Must match password."
+                  },
+                  "timezone": {
+                    "type": "string",
+                    "description": "Required. Must be a valid timezone."
+                  },
+                  "status": {
+                    "type": "boolean",
+                    "description": "Required."
+                  },
+                  "client": {
+                    "type": "boolean",
+                    "description": "Required for partner workspace."
+                  }
+                },
+                "required": [
+                  "name",
+                  "email",
+                  "password",
+                  "confirm_password",
+                  "timezone",
+                  "status"
+                ]
+              },
+              "encoding": {
+                "avatar": {
+                  "contentType": "image/*"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/users/{user}": {
+      "get": {
+        "summary": "Get User",
+        "description": "Retrieve a specific user by ID in the specified workspace.",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user",
+            "in": "path",
+            "description": "ID of the user.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      },
+      "post": {
+        "summary": "Update User in Workspace",
+        "description": "Update an existing user in the specified workspace.",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user",
+            "in": "path",
+            "description": "ID of the user.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "User update payload (multipart/form-data).",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "avatar": {
+                    "type": "string",
+                    "nullable": true,
+                    "format": "binary",
+                    "description": "Image file (≤ 1MB)."
+                  },
+                  "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "description": "Must pass 'valid_name'."
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Must be unique."
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 255,
+                    "description": "Optional. If provided, will update password."
+                  },
+                  "confirm_password": {
+                    "type": "string",
+                    "description": "Must match password if password is provided."
+                  },
+                  "timezone": {
+                    "type": "string",
+                    "description": "Must be a valid timezone."
+                  },
+                  "status": {
+                    "type": "boolean",
+                    "description": ""
+                  },
+                  "client": {
+                    "type": "boolean",
+                    "description": "Required for partner workspace."
+                  }
+                },
+                "required": ["name", "email", "timezone", "status"]
+              },
+              "encoding": {
+                "avatar": {
+                  "contentType": "image/*"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/Update200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      },
+      "delete": {
+        "summary": "Delete User",
+        "description": "Delete a user by ID in the specified workspace.",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user",
+            "in": "path",
+            "description": "ID of the user.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Delete200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/roles": {
+      "get": {
+        "summary": "Get Roles",
+        "description": "Retrieve all roles for the specified workspace.",
+        "tags": ["Roles"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Paginate200" },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      },
+      "post": {
+        "summary": "Create Role",
+        "description": "Create a new role in the specified workspace.",
+        "tags": ["Roles"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "permissions"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Unique name for the role."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/roles/{role}": {
+      "get": {
+        "summary": "Get Role",
+        "description": "Retrieve a specific role by ID in the specified workspace.",
+        "tags": ["Roles"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "role",
+            "in": "path",
+            "description": "ID of the role.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      },
+      "put": {
+        "summary": "Update Role",
+        "description": "Update an existing role in the specified workspace.",
+        "tags": ["Roles"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "role",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "permissions"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Unique name for the role."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/Update200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      },
+      "delete": {
+        "summary": "Delete Role",
+        "description": "Delete a role by ID in the specified workspace.",
+        "tags": ["Roles"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "role",
+            "in": "path",
+            "description": "ID of the role.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Delete200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      }
     }
   },
   "components": {

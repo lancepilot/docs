@@ -68,7 +68,26 @@
                 "pages": [
                   "pages/endpoints/role-and-permissions/get-permissions",
                   "pages/endpoints/role-and-permissions/get-roles"
-                 
+                ]
+              },
+              {
+                "group": "Users",
+                "pages": [
+                  "pages/endpoints/users/list",
+                  "pages/endpoints/users/add",
+                  "pages/endpoints/users/get",
+                  "pages/endpoints/users/update",
+                  "pages/endpoints/users/delete"
+                ]
+              },
+              {
+                "group": "Roles",
+                "pages": [
+                  "pages/endpoints/roles/list",
+                  "pages/endpoints/roles/add",
+                  "pages/endpoints/roles/get",
+                  "pages/endpoints/roles/update",
+                  "pages/endpoints/roles/delete"
                 ]
               }
             ]
