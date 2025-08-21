@@ -10,7 +10,7 @@
     "light": "#07C983",
     "dark": "#15803D"
   },
-  "favicon": "/logo/logo.svg",
+  "favicon": "",
   "navigation": {
     "tabs": [
       {
@@ -61,6 +61,16 @@
                   "pages/endpoints/contact-group/get",
                   "pages/endpoints/contact-group/update",
                   "pages/endpoints/contact-group/delete"
+                ]
+              },
+              {
+                "group": "Templates",
+                "pages": [
+                  "pages/endpoints/templates/list",
+                  "pages/endpoints/templates/add",
+                  "pages/endpoints/templates/get",
+                  "pages/endpoints/templates/delete",
+                  "pages/endpoints/templates/sync"
                 ]
               },
               {
