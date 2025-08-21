@@ -1906,6 +1906,271 @@
           "401": { "$ref": "#/components/responses/401" }
         }
       }
+    },
+    "/workspaces/{workspace}/contact-imports": {
+      "get": {
+        "summary": "Get Contact Imports",
+        "description": "Retrieve all contact imports for the specified workspace.",
+        "tags": ["Contact Imports"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of imports per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Paginate200" },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      },
+      "post": {
+        "summary": "Create Contact Import",
+        "description": "Create a new contact import in the specified workspace.",
+        "tags": ["Contact Imports"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Unique name per workspace."
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Required file. Must be CSV, TXT, XLSX, or XLS. Max size 5MB."
+                  },
+                  "contact_groups": {
+                    "type": "array",
+                    "nullable": true,
+                    "description": "Array of group IDs. Must exist in workspace and be assignable.",
+                    "items": {
+                      "type": "integer",
+                      "description": "Contact group ID."
+                    }
+                  }
+                },
+                "required": ["name", "file"]
+              },
+              "encoding": {
+                "file": {
+                  "contentType": "application/octet-stream"
+                },
+                "contact_groups": {
+                  "style": "form",
+                  "explode": true
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contact-imports/{contact-import}": {
+      "get": {
+        "summary": "Get Contact Import",
+        "description": "Retrieve a specific contact import by ID in the specified workspace.",
+        "tags": ["Contact Imports"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact-import",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      },
+      "patch": {
+        "summary": "Update Contact Import",
+        "description": "Update an existing contact import in the specified workspace.",
+        "tags": ["Contact Imports"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact-import",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Unique name per workspace."
+                  }
+                },
+                "required": ["name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/Update200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      },
+      "delete": {
+        "summary": "Delete Contact Import",
+        "description": "Delete a contact import by ID in the specified workspace.",
+        "tags": ["Contact Imports"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact-import",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Delete200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contact-imports/{contact-import}/download": {
+      "get": {
+        "summary": "Download Contact Import File",
+        "description": "Download the file of a specific contact import as a CSV file.",
+        "tags": ["Contact Imports"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact-import",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CSV file of contact import.",
+            "headers": {
+              "Content-Type": {
+                "description": "MIME type of the file.",
+                "schema": { "type": "string" },
+                "example": "text/csv"
+              },
+              "Content-Disposition": {
+                "description": "Indicates file download.",
+                "schema": { "type": "string" },
+                "example": "attachment; filename=\"contacts.csv\""
+              }
+            },
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      }
     }
   },
   "components": {

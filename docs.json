@@ -81,7 +81,8 @@
                   "pages/endpoints/contact-import/add",
                   "pages/endpoints/contact-import/get",
                   "pages/endpoints/contact-import/update",
-                  "pages/endpoints/contact-import/delete"
+                  "pages/endpoints/contact-import/delete",
+                  "pages/endpoints/contact-import/download"
                 ]
               },
               {
