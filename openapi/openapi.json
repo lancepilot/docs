@@ -21,34 +21,43 @@
   "paths": {
     "/workspaces": {
       "get": {
-        "summary": "Get all workspaces",
+        "summary": "Get Workspaces",
         "description": "Retrieve a list of all workspaces associated with the authenticated user.",
         "tags": ["Workspace"],
         "parameters": [
           {
-            "name": "Search",
+            "name": "search",
             "in": "query",
-            "description": "Filter workspaces based on search criteria.",
+            "description": "Filter contacts based on search criteria.",
             "required": false,
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of contacts per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
           }
         ],
         "responses": {
-          "200": {
-            "description": "List of workspaces retrieved successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WorkspaceListResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized access."
-          }
+          "200": { "$ref": "#/components/responses/Paginate200" },
+          "401": { "$ref": "#/components/responses/401" }
         }
       },
       "post": {
@@ -61,39 +70,63 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/WorkspaceCreateRequest"
+                "type": "object",
+                "required": ["name", "type", "status"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Unique name per user."
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["INTERNAL", "PARTNER"],
+                    "description": "Type of workspace."
+                  },
+                  "status": {
+                    "type": "boolean",
+                    "description": "Workspace status (active/inactive)."
+                  }
+                }
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "Workspace created successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GenericResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden: Exceeds workspace creation limit."
-          },
-          "422": {
-            "description": "Unprocessable Entity: Validation errors."
-          }
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "422": { "$ref": "#/components/responses/422" }
         }
       }
     },
-    "/workspaces/{workspace_id}": {
-      "post": {
-        "summary": "Update a workspace",
+    "/workspaces/{workspace}": {
+      "get": {
+        "summary": "Get a specific workspace",
+        "description": "Retrieve details of a specific workspace by its ID.",
+        "tags": ["Workspace"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace to retrieve.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/200" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      },
+      "patch": {
+        "summary": "Update Workspace",
         "description": "Update the specified workspace.",
         "tags": ["Workspace"],
         "parameters": [
           {
-            "name": "workspace_id",
+            "name": "workspace",
             "in": "path",
             "description": "ID of the workspace to update.",
             "required": true,
@@ -109,31 +142,41 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/WorkspaceUpdateRequest"
+                "type": "object",
+                "required": ["name", "type", "status"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "New workspace name."
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["INTERNAL", "PARTNER"],
+                    "description": "Must be a valid workspace type."
+                  },
+                  "status": {
+                    "type": "boolean",
+                    "description": "New status (true for active, false for inactive)."
+                  }
+                }
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Workspace updated successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GenericResponse"
-                }
-              }
-            }
-          }
+          "200": { "$ref": "#/components/responses/Update200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
         }
       },
+
       "delete": {
         "summary": "Delete a workspace",
         "description": "Delete a workspace by ID.",
         "tags": ["Workspace"],
         "parameters": [
           {
-            "name": "workspace_id",
+            "name": "workspace",
             "in": "path",
             "description": "ID of the workspace to delete.",
             "required": true,
@@ -144,38 +187,58 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Workspace deleted successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GenericResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found: Workspace not found or unauthorized access."
-          }
+          "200": { "$ref": "#/components/responses/Delete200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
         }
       }
     },
-    "/workspaces/partner-permissions": {
+    "/workspaces/partner/permissions": {
       "get": {
         "summary": "Get partner default permissions",
         "description": "Retrieve the authenticated user’s default permissions for partner workspaces.",
         "tags": ["Workspace"],
         "responses": {
           "200": {
-            "description": "Permissions fetched successfully.",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PermissionsResponse"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": ["data"]
+                },
+                "examples": {
+                  "permissions": {
+                    "value": {
+                      "data": [
+                        {
+                          "group-1": []
+                        },
+                        {
+                          "group-2": []
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
-          }
+          },
+          "401": { "$ref": "#/components/responses/401" }
         }
       }
     },
@@ -677,6 +740,79 @@
             }
           },
           "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/{contact}/messages": {
+      "post": {
+        "summary": "Send Text Message",
+        "description": "Send a text message to a specific contact within a workspace.",
+        "tags": ["Messages"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "description": "ID of the contact.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Message sending parameters.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["type", "text"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["text"],
+                    "description": "Message type. Only 'text' is supported."
+                  },
+                  "text": {
+                    "type": "object",
+                    "required": ["body"],
+                    "properties": {
+                      "body": {
+                        "type": "string",
+                        "description": "Text message body."
+                      }
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "text": {
+                  "value": {
+                    "type": "text",
+                    "text": {
+                      "body": "Hi how are you doing?"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "422": { "$ref": "#/components/responses/422" }
         }
       }
     },
@@ -2175,111 +2311,6 @@
   },
   "components": {
     "schemas": {
-      "WorkspaceListResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Data retrieved successfully."
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Workspace"
-            }
-          },
-          "status": {
-            "type": "integer",
-            "example": 200
-          }
-        }
-      },
-      "Workspace": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "9b8511c7-ad64-49e3-89d3-428ce8d0efe4"
-          },
-          "attributes": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "example": "test-workspace"
-              },
-              "status": {
-                "type": "integer",
-                "example": 1
-              },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time",
-                "example": "2025-05-14T04:18:19.000000Z"
-              }
-            }
-          }
-        }
-      },
-      "WorkspaceCreateRequest": {
-        "type": "object",
-        "required": ["name", "type", "status"],
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Unique name per user."
-          },
-          "type": {
-            "type": "string",
-            "enum": ["INTERNAL", "PARTNER"],
-            "description": "Type of workspace."
-          },
-          "status": {
-            "type": "boolean",
-            "description": "Workspace status (active/inactive)."
-          }
-        }
-      },
-      "WorkspaceUpdateRequest": {
-        "type": "object",
-        "required": ["name", "type", "status"],
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "New workspace name."
-          },
-          "type": {
-            "type": "string",
-            "enum": ["INTERNAL", "PARTNER"],
-            "description": "Must be a valid workspace type."
-          },
-          "status": {
-            "type": "boolean",
-            "description": "New status (true for active, false for inactive)."
-          }
-        }
-      },
-      "PermissionsResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Permissions fetched successfully."
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "example": "contacts.view"
-            }
-          },
-          "status": {
-            "type": "integer",
-            "example": 200
-          }
-        }
-      },
       "PermissionsUpdateRequest": {
         "type": "object",
         "required": ["permissions"],
@@ -2290,23 +2321,6 @@
               "type": "string",
               "description": "Must match valid permissions from Permissions::values()."
             }
-          }
-        }
-      },
-      "GenericResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Operation completed successfully."
-          },
-          "data": {
-            "type": "array",
-            "items": {}
-          },
-          "status": {
-            "type": "integer",
-            "example": 200
           }
         }
       },

@@ -26,10 +26,12 @@
               {
                 "group": "Workspaces",
                 "pages": [
-                  "pages/endpoints/workspaces/get",
+                  "pages/endpoints/workspaces/list",
                   "pages/endpoints/workspaces/create",
+                  "pages/endpoints/workspaces/get",
+                  "pages/endpoints/workspaces/update",
                   "pages/endpoints/workspaces/delete",
-                  "pages/endpoints/workspaces/webhook"
+                  "pages/endpoints/workspaces/permissions"
                 ]
               },
               {
@@ -45,7 +47,7 @@
               },
               {
                 "group": "Messages",
-                "pages": []
+                "pages": ["pages/endpoints/messages/text-message"]
               },
               {
                 "group": "Channel & Wallet",
