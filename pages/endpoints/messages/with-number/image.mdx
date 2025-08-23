@@ -1,0 +1,34 @@
+---
+title: 'Image Message'
+openapi: 'POST /workspaces/{workspace}/contacts/number/{number}/messages/image'
+---
+This endpoint allows you to send an image message to a contact. You can provide the image in two ways:
+
+1. **Image URL**: Pass the image URL in the request body.
+2. **Uploaded File**: Send the image as a file using `multipart/form-data`.
+
+### File Field Requirements
+
+- **file**:  
+    - **Required**
+    - **Allowed MIME types**: `jpg`, `png`
+    - **Maximum size**: 5.12 MB (`max:5120` KB)
+
+### Request Options
+
+- **Image URL Example (JSON):**
+        ```json
+        {
+          "file": "https://example.com/image.jpg"
+        }
+        ```
+
+- **Uploaded File Example (multipart/form-data):**
+        ```
+        POST /workspaces/{workspace}/contacts/number/{number}/messages/image
+        Content-Type: multipart/form-data
+
+        file: [binary image file]
+        ```
+
+Choose the method that best fits your use case.

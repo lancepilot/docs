@@ -1,0 +1,34 @@
+---
+title: 'Audio Message'
+openapi: 'POST /workspaces/{workspace}/contacts/number/{number}/messages/audio'
+---
+This endpoint allows you to send an audio message to a contact. You can provide the audio in two ways:
+
+1. **Audio URL**: Pass the audio URL in the request body.
+2. **Uploaded File**: Send the audio as a file using `multipart/form-data`.
+
+### File Field Requirements
+
+- **file**:  
+    - **Required**
+    - **Allowed MIME types**: `aac`, `amr`, `mp3`, `m4a`, `ogg`
+    - **Maximum size**: 16 MB (`max:16384` KB)
+
+### Request Options
+
+- **Audio URL Example (JSON):**
+        ```json
+        {
+          "file": "https://example.com/audio.mp3"
+        }
+        ```
+
+- **Uploaded File Example (multipart/form-data):**
+        ```
+        POST /workspaces/{workspace}/contacts/number/{number}/messages/audio
+        Content-Type: multipart/form-data
+
+        file: [binary audio file]
+        ```
+
+Choose the method that best fits your use case.

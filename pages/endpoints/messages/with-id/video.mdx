@@ -1,0 +1,34 @@
+---
+title: 'Video Message'
+openapi: 'POST /workspaces/{workspace}/contacts/{contact}/messages/video'
+---
+This endpoint allows you to send an video message to a contact. You can provide the video in two ways:
+
+1. **Video URL**: Pass the video URL in the request body.
+2. **Uploaded File**: Send the video as a file using `multipart/form-data`.
+
+### File Field Requirements
+
+- **file**:  
+    - **Required**
+    - **Allowed MIME types**: `mp4`, `3gp`
+    - **Maximum size**: 16 MB (`max:16384` KB)
+
+### Request Options
+
+- **Video URL Example (JSON):**
+        ```json
+        {
+          "file": "https://example.com/video.mp4"
+        }
+        ```
+
+- **Uploaded File Example (multipart/form-data):**
+        ```
+        POST /workspaces/{workspace}/contacts/{contact}/messages/video
+        Content-Type: multipart/form-data
+
+        file: [binary video file]
+        ```
+
+Choose the method that best fits your use case.

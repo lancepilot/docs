@@ -47,8 +47,24 @@
                 ]
               },
               {
-                "group": "Messages",
-                "pages": ["pages/endpoints/messages/text-message"]
+                "group": "Send Messages (With Id)",
+                "pages": [
+                  "pages/endpoints/messages/with-id/text",
+                  "pages/endpoints/messages/with-id/image",
+                  "pages/endpoints/messages/with-id/audio",
+                  "pages/endpoints/messages/with-id/video",
+                  "pages/endpoints/messages/with-id/document"
+                ]
+              },
+              {
+                "group": "Send Messages (With Number)",
+                "pages": [
+                  "pages/endpoints/messages/with-number/text",
+                  "pages/endpoints/messages/with-number/image",
+                  "pages/endpoints/messages/with-number/audio",
+                  "pages/endpoints/messages/with-number/video",
+                  "pages/endpoints/messages/with-number/document"
+                ]
               },
               {
                 "group": "Channel & Wallet",
@@ -144,6 +160,11 @@
         {
           "anchor": "Support",
           "href": "https://api.whatsapp.com/send/?phone=447309574692&text=Hi&type=phone_number&app_absent=0k",
+          "icon": "whatsapp"
+        },
+        {
+          "anchor": "Channel",
+          "href": "https://whatsapp.com/channel/0029Vb5QMExEKyZAhMEB8N2k",
           "icon": "whatsapp"
         },
         {

@@ -744,9 +744,9 @@
         }
       }
     },
-    "/workspaces/{workspace}/contacts/{contact}/messages": {
+    "/workspaces/{workspace}/contacts/{contact}/messages/text": {
       "post": {
-        "summary": "Send Text Message",
+        "summary": "Text Message",
         "description": "Send a text message to a specific contact within a workspace.",
         "tags": ["Messages"],
         "parameters": [
@@ -766,7 +766,8 @@
             "description": "ID of the contact.",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -777,13 +778,8 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["type", "text"],
+                "required": ["text"],
                 "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["text"],
-                    "description": "Message type. Only 'text' is supported."
-                  },
                   "text": {
                     "type": "object",
                     "required": ["body"],
@@ -799,10 +795,587 @@
               "examples": {
                 "text": {
                   "value": {
-                    "type": "text",
                     "text": {
-                      "body": "Hi how are you doing?"
+                      "body": "this is test text message"
                     }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/{contact}/messages/image": {
+      "post": {
+        "summary": "Image Message",
+        "description": "Send a text message to a specific contact within a workspace.",
+        "tags": ["Messages"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "description": "ID of the contact.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Message sending parameters.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Image URL."
+                  },
+                  "caption": {
+                    "type": "string",
+                    "description": "Optional caption for the image."
+                  }
+                }
+              },
+              "examples": {
+                "image": {
+                  "value": {
+                    "file": "https://example.com/image.jpg",
+                    "caption": "This is caption fo image."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/{contact}/messages/audio": {
+      "post": {
+        "summary": "Audio Message",
+        "description": "Send a audio message to a specific contact within a workspace.",
+        "tags": ["Messages"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "description": "ID of the contact.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Message sending parameters.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Audio URL."
+                  }
+                }
+              },
+              "examples": {
+                "audio": {
+                  "value": {
+                    "file": "https://example.com/audio.mp3"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/{contact}/messages/video": {
+      "post": {
+        "summary": "Video Message",
+        "description": "Send a video message to a specific contact within a workspace.",
+        "tags": ["Messages"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "description": "ID of the contact.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Message sending parameters.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Video URL."
+                  },
+                  "caption": {
+                    "type": "string",
+                    "description": "Optional caption for the video."
+                  }
+                }
+              },
+              "examples": {
+                "video": {
+                  "value": {
+                    "file": "http://static.videezy.com/system/resources/previews/000/000/150/original/waterdrop.mp4",
+                    "caption": "this video send via contact id with json payload"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/{contact}/messages/document": {
+      "post": {
+        "summary": "Document Message",
+        "description": "Send a document message to a specific contact within a workspace.",
+        "tags": ["Messages"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "description": "ID of the contact.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Message sending parameters.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Document URL."
+                  },
+                  "caption": {
+                    "type": "string",
+                    "description": "Optional caption for the document."
+                  }
+                }
+              },
+              "examples": {
+                "document": {
+                  "value": {
+                    "file": "https://example.com/document.pdf",
+                    "caption": "This is caption for document."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/number/{number}/messages/text": {
+      "post": {
+        "summary": "Text Message",
+        "description": "Send a text message to a specific contact within a workspace.",
+        "tags": ["Messages"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "description": "Number of the contact.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Message sending parameters.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["text"],
+                "properties": {
+                  "text": {
+                    "type": "object",
+                    "required": ["body"],
+                    "properties": {
+                      "body": {
+                        "type": "string",
+                        "description": "Text message body."
+                      }
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "text": {
+                  "value": {
+                    "text": {
+                      "body": "this is test text message"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/number/{number}/messages/image": {
+      "post": {
+        "summary": "Image Message",
+        "description": "Send a text message to a specific contact within a workspace.",
+        "tags": ["Messages"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "description": "Number of the contact.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Message sending parameters.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Image URL."
+                  },
+                  "caption": {
+                    "type": "string",
+                    "description": "Optional caption for the image."
+                  }
+                }
+              },
+              "examples": {
+                "image": {
+                  "value": {
+                    "file": "https://example.com/image.jpg",
+                    "caption": "This is caption fo image."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/number/{number}/messages/audio": {
+      "post": {
+        "summary": "Audio Message",
+        "description": "Send a audio message to a specific contact within a workspace.",
+        "tags": ["Messages"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "description": "Number of the contact.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Message sending parameters.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Audio URL."
+                  }
+                }
+              },
+              "examples": {
+                "audio": {
+                  "value": {
+                    "file": "https://example.com/audio.mp3"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/number/{number}/messages/video": {
+      "post": {
+        "summary": "Video Message",
+        "description": "Send a video message to a specific contact within a workspace.",
+        "tags": ["Messages"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "description": "Number of the contact.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Message sending parameters.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Video URL."
+                  },
+                  "caption": {
+                    "type": "string",
+                    "description": "Optional caption for the video."
+                  }
+                }
+              },
+              "examples": {
+                "video": {
+                  "value": {
+                    "file": "http://static.videezy.com/system/resources/previews/000/000/150/original/waterdrop.mp4",
+                    "caption": "this video send via contact id with json payload"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/number/{number}/messages/document": {
+      "post": {
+        "summary": "Document Message",
+        "description": "Send a document message to a specific contact within a workspace.",
+        "tags": ["Messages"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "description": "Number of the contact.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Message sending parameters.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Document URL."
+                  },
+                  "caption": {
+                    "type": "string",
+                    "description": "Optional caption for the document."
+                  }
+                }
+              },
+              "examples": {
+                "document": {
+                  "value": {
+                    "file": "https://example.com/document.pdf",
+                    "caption": "This is caption for document."
                   }
                 }
               }

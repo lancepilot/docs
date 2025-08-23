@@ -1,0 +1,34 @@
+---
+title: 'Document Message'
+openapi: 'POST /workspaces/{workspace}/contacts/{contact}/messages/document'
+---
+This endpoint allows you to send an document message to a contact. You can provide the document in two ways:
+
+1. **Document URL**: Pass the document URL in the request body.
+2. **Uploaded File**: Send the document as a file using `multipart/form-data`.
+
+### File Field Requirements
+
+- **file**:  
+    - **Required**
+    - **Allowed MIME types**: `txt`, `docx`, `ppt`, `pptx`, `xls`, `xlsx`, `doc`, `pdf`
+    - **Maximum size**: 100 MB (`max:102400` KB)
+
+### Request Options
+
+- **Document URL Example (JSON):**
+        ```json
+        {
+          "file": "https://example.com/document.txt"
+        }
+        ```
+
+- **Uploaded File Example (multipart/form-data):**
+        ```
+        POST /workspaces/{workspace}/contacts/{contact}/messages/document
+        Content-Type: multipart/form-data
+
+        file: [binary document file]
+        ```
+
+Choose the method that best fits your use case.
