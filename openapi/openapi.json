@@ -240,10 +240,8 @@
           },
           "401": { "$ref": "#/components/responses/401" }
         }
-      }
-    },
-    "/workspaces/update-partner-permissions": {
-      "post": {
+      },
+      "patch": {
         "summary": "Update partner default permissions",
         "description": "Update the default permissions applied to new partner workspaces created by the user.",
         "tags": ["Workspace"],
@@ -253,22 +251,25 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PermissionsUpdateRequest"
+                "type": "object",
+                "required": ["permissions"],
+                "properties": {
+                  "permissions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "Must match valid permissions from GET."
+                    }
+                  }
+                }
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Permissions updated successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GenericResponse"
-                }
-              }
-            }
-          }
+          "200": { "$ref": "#/components/responses/Update200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "422": { "$ref": "#/components/responses/422" }
         }
       }
     },
@@ -2311,19 +2312,6 @@
   },
   "components": {
     "schemas": {
-      "PermissionsUpdateRequest": {
-        "type": "object",
-        "required": ["permissions"],
-        "properties": {
-          "permissions": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "description": "Must match valid permissions from Permissions::values()."
-            }
-          }
-        }
-      },
       "Paginate": {
         "type": "object",
         "properties": {

@@ -31,7 +31,8 @@
                   "pages/endpoints/workspaces/get",
                   "pages/endpoints/workspaces/update",
                   "pages/endpoints/workspaces/delete",
-                  "pages/endpoints/workspaces/permissions"
+                  "pages/endpoints/workspaces/permissions",
+                  "pages/endpoints/workspaces/update-permissions"
                 ]
               },
               {
