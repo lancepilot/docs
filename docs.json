@@ -26,22 +26,26 @@
               {
                 "group": "Workspaces",
                 "pages": [
-                  "api-reference/endpoint/get",
-                  "api-reference/endpoint/create",
-                  "api-reference/endpoint/delete",
-                  "api-reference/endpoint/webhook"
+                  "pages/endpoints/workspaces/get",
+                  "pages/endpoints/workspaces/create",
+                  "pages/endpoints/workspaces/delete",
+                  "pages/endpoints/workspaces/webhook"
                 ]
               },
               {
                 "group": "Contacts",
                 "pages": [
-                  "api-reference/contacts/list",
-                  "api-reference/contacts/export",
-                  "api-reference/contacts/add",
-                  "api-reference/contacts/get",
-                  "api-reference/contacts/update",
-                  "api-reference/contacts/delete"
+                  "pages/endpoints/contacts/list",
+                  "pages/endpoints/contacts/export",
+                  "pages/endpoints/contacts/add",
+                  "pages/endpoints/contacts/get",
+                  "pages/endpoints/contacts/update",
+                  "pages/endpoints/contacts/delete"
                 ]
+              },
+              {
+                "group": "Messages",
+                "pages": []
               },
               {
                 "group": "Channel & Wallet",
