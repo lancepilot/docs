@@ -2,3 +2,81 @@
 title: 'Add Template'
 openapi: 'POST /workspaces/{workspace}/templates'
 ---
+
+## **Request Body Schema**
+
+| Field               | Type          | Required       | Description                                                                                                                                               |
+| ------------------- | ------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`              | string        | Yes            | Unique template name (only lowercase + underscores).                                                                                                      |
+| `language`          | string        | Yes            | Language code (e.g., `en`, `bn`).                                                                                                                         |
+| `category`          | string        | Yes            | One of: `MARKETING`, `UTILITY`, `AUTHENTICATION`.                                                                                                         |
+| `header`            | object / null | No             | Template header. Can be: <br /> - `null` → No header <br /> - `text` → Text header (max 60 chars) <br /> - `media` → Media header (image/video/document). |
+| `body`              | object        | Yes            | Main message body. Supports variables (`{{1}}`, `{{2}}`).                                                                                                 |
+| `body.text`         | string        | Yes            | Message text (max 1024 chars).                                                                                                                            |
+| `body.otp_code`     | string        | Auth only      | Required for `AUTHENTICATION` templates (max 15 chars).                                                                                                   |
+| `body.variables`    | array         | No             | Variable placeholders (strings).                                                                                                                          |
+| `footer`            | string        | No             | Footer text (max 60 chars, no emojis).                                                                                                                    |
+| `buttons`           | array         | No             | Interactive buttons (URL, Phone, Quick Reply).                                                                                                            |
+| `unsubscribeButton` | boolean       | No             | Whether to show **Unsubscribe** option.                                                                                                                   |
+| `blockButton`       | boolean       | No             | Whether to show **Block** option.                                                                                                                         |
+
+---
+## **Example Payloads for All type Template**
+Since JSON doesn’t support comments, Write it in **pseudo-JSON with `// comments`**.
+(You can later remove the comments for real JSON.)
+
+```jsonc
+{
+  "name": "template_name",                  // required (unique, lowercase + underscores)
+  "language": "en",                         // required
+  "category": "MARKETING",                  // required: MARKETING | UTILITY | AUTHENTICATION
+
+  // ----- HEADER -----
+  // if header not needed => omit "header" or set to null
+  // if header.type = "text" => send "header.text"
+  // if header.type = "media" => send "header.media"
+
+  "header": {
+    "type": "text",                         // "text" OR "media" OR null
+    "text": {                               // required if header.type = "text"
+      "content": "Payment Receipt",         // required, max 60 chars
+      "variables": []                       // optional, max 1 item
+    },
+    "media": {                              // required if header.type = "media"
+      "type": "image",                      // image | video | document
+      "file": "data:image/png;base64,..."   // required if header.type = "media"
+    }
+  },
+
+  // ----- BODY -----
+  "body": {
+    "text": "Hello {{1}}, your OTP is {{2}}",   // required, max 1024 chars
+    "otp_code": "{{2}}",                        // required ONLY when category = AUTHENTICATION
+    "variables": ["John Doe", "123456"]         // required if variables exist in text
+  },
+
+  "footer": "Thank you for choosing us",        // optional, max 60 chars
+
+  // ----- BUTTONS -----
+  "buttons": [
+    {
+      "type": "URL",                            // required: URL | PHONE_NUMBER | QUICK_REPLY
+      "text": "Visit Website",                  // required if type != PHONE_NUMBER
+      "url": "https://example.com"              // required if type = URL
+    },
+    {
+      "type": "PHONE_NUMBER",
+      "phone_number": "+880123456789"           // required if type = PHONE_NUMBER
+    },
+    {
+      "type": "QUICK_REPLY",
+      "text": "Yes"                             // required if type = QUICK_REPLY
+    }
+  ],
+
+  "unsubscribeButton": true,                    // optional, boolean
+  "blockButton": false                          // optional, boolean
+}
+```
+
+

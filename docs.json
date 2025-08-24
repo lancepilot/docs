@@ -10,18 +10,18 @@
     "light": "#07C983",
     "dark": "#15803D"
   },
-  "favicon": "",
+  "favicon": "/assets/logo.ico",
   "navigation": {
     "tabs": [
       {
         "tab": "API Reference",
         "groups": [
           {
-            "group": "API Documentation",
+            "group": "Documentation",
             "pages": ["index"]
           },
           {
-            "group": "Endpoints",
+            "group": "API Reference",
             "pages": [
               {
                 "group": "Workspaces",
@@ -47,8 +47,9 @@
                 ]
               },
               {
-                "group": "Send Messages (With Id)",
+                "group": "Send Messages (Via Id)",
                 "pages": [
+                  "pages/endpoints/messages/with-id/can-send-free",
                   "pages/endpoints/messages/with-id/text",
                   "pages/endpoints/messages/with-id/image",
                   "pages/endpoints/messages/with-id/audio",
@@ -57,13 +58,21 @@
                 ]
               },
               {
-                "group": "Send Messages (With Number)",
+                "group": "Send Messages (Via Number)",
                 "pages": [
+                  "pages/endpoints/messages/with-number/can-send-free",
                   "pages/endpoints/messages/with-number/text",
                   "pages/endpoints/messages/with-number/image",
                   "pages/endpoints/messages/with-number/audio",
                   "pages/endpoints/messages/with-number/video",
                   "pages/endpoints/messages/with-number/document"
+                ]
+              },
+              {
+                "group": "Send Template Messages",
+                "pages": [
+                  "pages/endpoints/template-message/send-id",
+                  "pages/endpoints/template-message/send-number"
                 ]
               },
               {
@@ -181,16 +190,13 @@
     }
   },
   "logo": {
-    "light": "/assets/logo/logo.svg",
-    "dark": "/assets/logo/logo.svg"
+    "light": "/assets/logo.svg",
+    "dark": "/assets/logo.svg"
   },
   "navbar": {},
   "footer": {
     "socials": {
-      "youtube": "https://www.youtube.com/channel/UCy0gFhDio6Yjz620PdFgxlg",
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "youtube": "https://www.youtube.com/watch?v=AEh8Rq__6B8"
     }
   }
 }

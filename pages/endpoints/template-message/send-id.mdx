@@ -1,0 +1,49 @@
+---
+title: 'Send Template Message (Id)'
+openapi: 'POST /workspaces/{workspace}/contacts/{contact}/template-messages'
+---
+
+### Description
+
+This endpoint allows you to send a template message with optional media in the header.
+You can provide the media in two ways:
+
+1. **Media URL**: Pass the media URL in `template_data.header.media.file`.
+2. **Uploaded File**: Send the media as a file instance using `multipart/form-data` in the same field (`template_data.header.media.file`).
+
+### File Field Requirements
+
+* **file**:
+
+  * **Required** (when template has media header)
+  * **Allowed types**: `image`, `video`, `document`
+  * **Maximum size**: 16 MB (`max:16384` KB)
+
+### Request Options
+
+* **Media URL Example (JSON):**
+
+```json
+{
+  "template_id": 12,
+  "template_data": {
+    "header": {
+      "media": {
+        "file": "https://example.com/sample-image.jpg"
+      }
+    }
+  }
+}
+```
+
+* **Uploaded File Example (multipart/form-data):**
+
+```
+POST /api/v3/send-template-message
+Content-Type: multipart/form-data
+
+template_id: 12
+template_data[header][media][file]: [binary file]
+```
+
+---

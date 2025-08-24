@@ -325,99 +325,60 @@
         }
       },
       "post": {
-        "summary": "Add Contact",
-        "description": "Create a new contact in the specified workspace.",
-        "tags": ["Contacts"],
-        "parameters": [
+        "summary": "Create a contact",
+        "description": "Create a new contact in the workspace.",
+        "operationId": "createContact",
+         "parameters": [
           {
             "name": "workspace",
             "in": "path",
-            "required": true,
             "description": "ID of the workspace.",
-            "schema": { "type": "string", "format": "uuid" }
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "requestBody": {
           "required": true,
-          "description": "Contact creation payload (multipart/form-data).",
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "number": {
                     "type": "string",
-                    "maxLength": 255,
-                    "description": "Phone number. Must be valid, not a channel, and unique in workspace."
-                  },
-                  "status": {
-                    "type": "boolean",
-                    "nullable": true,
-                    "description": "Boolean status. In multipart, send `1` or `0` for best compatibility.",
-                    "examples": { "enabled": { "value": true } }
+                    "example": "+14155550123",
+                    "description": "The WhatsApp phone number of the contact"
                   },
                   "name": {
                     "type": "string",
-                    "nullable": true,
-                    "maxLength": 50,
-                    "description": "Must pass 'valid_name'."
+                    "example": "John Doe",
+                    "maxLength": 50
                   },
                   "email": {
                     "type": "string",
-                    "nullable": true,
                     "format": "email",
-                    "maxLength": 255
-                  },
-                  "avatar": {
-                    "type": "string",
-                    "nullable": true,
-                    "format": "binary",
-                    "description": "Image file (≤ 2MB)."
+                    "example": "john@example.com"
                   },
                   "gender": {
                     "type": "string",
-                    "nullable": true,
-                    "enum": ["male", "female", "other"]
-                  },
-                  "contact_groups": {
-                    "type": "array",
-                    "nullable": true,
-                    "description": "Array of group IDs. Must exist in workspace and be assignable.",
-                    "items": { "type": "integer", "minimum": 1 },
-                    "examples": { "eg": { "value": [4, 5] } }
-                  },
-                  "fields": {
-                    "type": "object",
-                    "nullable": true,
-                    "description": "Custom fields as key-value pairs. Keys must pre-exist in this workspace (ContactField). Each value ≤ 255 chars.",
-                    "additionalProperties": {
-                      "type": "string",
-                      "maxLength": 255
-                    },
-                    "examples": {
-                      "eg": {
-                        "value": { "linked_in": "https://www.linkedin.com/" }
-                      }
-                    }
+                    "enum": ["male", "female", "other"],
+                    "example": "male"
                   }
                 },
                 "required": ["number"]
               },
-              "encoding": {
-                "avatar": {
-                  "contentType": "image/*"
-                },
-                "contact_groups": {
-                  "style": "form",
-                  "explode": true
-                },
-                "fields": {
-                  "style": "deepObject",
-                  "explode": true
-                },
-                "status": {
-                  "style": "form",
-                  "explode": false
+              "examples": {
+                "basic": {
+                  "summary": "Basic Contact",
+                  "value": {
+                    "number": "+14155550123",
+                    "name": "John Doe",
+                    "email": "john@example.com",
+                    "gender": "male"
+                  }
                 }
               }
             }
@@ -425,28 +386,11 @@
         },
         "responses": {
           "201": {
-            "description": "Contact created successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": ["status", "message", "data"],
-                  "properties": {
-                    "status": { "type": "integer", "example": 201 },
-                    "message": {
-                      "type": "string",
-                      "example": "Contact created successfully"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Created contact resource."
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/201"
           },
-          "401": { "$ref": "#/components/responses/401" }
+          "422": {
+            "$ref": "#/components/responses/422"
+          }
         }
       }
     },
@@ -547,6 +491,451 @@
         ],
         "responses": {
           "200": { "$ref": "#/components/responses/200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      },
+       "post": {
+        "summary": "Update a contact",
+        "description": "Update an existing contact in the workspace.",
+        "operationId": "updateContact",
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the contact to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John Doe",
+                    "maxLength": 50
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john@example.com"
+                  },
+                  "gender": {
+                    "type": "string",
+                    "enum": ["male", "female", "other"],
+                    "example": "male"
+                  },
+                  "status": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                },
+                "required": ["name"]
+              },
+              "examples": {
+                "updateContact": {
+                  "summary": "Basic update",
+                  "value": {
+                    "name": "John Smith",
+                    "email": "johnsmith@example.com",
+                    "gender": "male",
+                    "status": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Update200"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Contact",
+        "description": "Delete a contact by ID.",
+        "tags": ["Contacts"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "required": true,
+            "description": "ID of the workspace.",
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "required": true,
+            "description": "ID of the contact.",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Contact deleted successfully."
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    }
+                  },
+                  "required": ["message", "status"]
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/{contact}/can-send-free-message": {
+      "get": {
+        "summary": "Check Can Send Free Message",
+        "description": "",
+        "tags": ["Messages"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "description": "ID of the contact.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["data"],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": ["canSend"],
+                      "properties": {
+                        "canSend": {
+                          "type": "boolean",
+                          "description": "Indicates if free message can be sent."
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "canSend": {
+                    "value": {
+                      "data": {
+                        "canSend": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      },
+      "post": {
+        "summary": "Update Contact",
+        "description": "Update an existing contact in the specified workspace. The contact's number cannot be updated.",
+        "tags": ["Contacts"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "required": true,
+            "description": "ID of the workspace.",
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "required": true,
+            "description": "ID of the contact.",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Contact update payload (multipart/form-data). The contact's number cannot be updated.",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "boolean",
+                    "nullable": true,
+                    "description": "Boolean status. In multipart, send `1` or `0` for best compatibility.",
+                    "examples": { "enabled": { "value": true } }
+                  },
+                  "name": {
+                    "type": "string",
+                    "nullable": true,
+                    "maxLength": 50,
+                    "description": "Must pass 'valid_name'."
+                  },
+                  "email": {
+                    "type": "string",
+                    "nullable": true,
+                    "format": "email",
+                    "maxLength": 255
+                  },
+                  "avatar": {
+                    "type": "string",
+                    "nullable": true,
+                    "format": "binary",
+                    "description": "Image file (≤ 2MB)."
+                  },
+                  "gender": {
+                    "type": "string",
+                    "nullable": true,
+                    "enum": ["male", "female", "other"]
+                  },
+                  "contact_groups": {
+                    "type": "array",
+                    "nullable": true,
+                    "description": "Array of group IDs. Must exist in workspace and be assignable.",
+                    "items": { "type": "integer", "minimum": 1 },
+                    "examples": { "eg": { "value": [4, 5] } }
+                  },
+                  "fields": {
+                    "type": "object",
+                    "nullable": true,
+                    "description": "Custom fields as key-value pairs. Keys must pre-exist in this workspace (ContactField). Each value ≤ 255 chars.",
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "examples": {
+                      "eg": {
+                        "value": { "linked_in": "https://www.linkedin.com/" }
+                      }
+                    }
+                  }
+                }
+              },
+              "encoding": {
+                "avatar": {
+                  "contentType": "image/*"
+                },
+                "contact_groups": {
+                  "style": "form",
+                  "explode": true
+                },
+                "fields": {
+                  "style": "deepObject",
+                  "explode": true
+                },
+                "status": {
+                  "style": "form",
+                  "explode": false
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status", "message", "data"],
+                  "properties": {
+                    "status": { "type": "integer", "example": 200 },
+                    "message": {
+                      "type": "string",
+                      "example": "Contact updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Updated contact resource."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Resource not found"
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    }
+                  },
+                  "required": ["message", "status"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Contact",
+        "description": "Delete a contact by ID.",
+        "tags": ["Contacts"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "required": true,
+            "description": "ID of the workspace.",
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "required": true,
+            "description": "ID of the contact.",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Contact deleted successfully."
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    }
+                  },
+                  "required": ["message", "status"]
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/number/{number}/can-send-free-message": {
+      "get": {
+        "summary": "Check Can Send Free Message",
+        "description": "",
+        "tags": ["Messages"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "description": "Number of the contact.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["data"],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": ["canSend"],
+                      "properties": {
+                        "canSend": {
+                          "type": "boolean",
+                          "description": "Indicates if free message can be sent."
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "canSend": {
+                    "value": {
+                      "data": {
+                        "canSend": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": { "$ref": "#/components/responses/401" },
           "404": { "$ref": "#/components/responses/404" }
         }
@@ -1378,6 +1767,158 @@
                     "caption": "This is caption for document."
                   }
                 }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/{contact}/template-messages": {
+      "post": {
+        "summary": "Send Template Message",
+        "description": "",
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "description": "Id of the contact.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "template_id": {
+                    "type": "integer",
+                    "example": 12
+                  },
+                  "template_data": {
+                    "type": "object",
+                    "properties": {
+                      "header": {
+                        "type": "object",
+                        "properties": {
+                          "media": {
+                            "type": "object",
+                            "properties": {
+                              "file": {
+                                "type": "string",
+                                "format": "uri",
+                                "example": "https://example.com/sample-image.jpg",
+                                "description": "Media URL. **Alternative option:** You can also upload a file here using `multipart/form-data` as `template_data.header.media.file`."
+                              }
+                            },
+                            "additionalProperties": false,
+                            "required": ["file"]
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["template_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/201" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "422": { "$ref": "#/components/responses/422" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contacts/number/{number}/template-messages": {
+      "post": {
+        "summary": "Send Template Message",
+        "description": "",
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "description": "Number of the contact.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "template_id": {
+                    "type": "integer",
+                    "example": 12
+                  },
+                  "template_data": {
+                    "type": "object",
+                    "properties": {
+                      "header": {
+                        "type": "object",
+                        "properties": {
+                          "media": {
+                            "type": "object",
+                            "properties": {
+                              "file": {
+                                "type": "string",
+                                "format": "uri",
+                                "example": "https://example.com/sample-image.jpg",
+                                "description": "Media URL. **Alternative option:** You can also upload a file here using `multipart/form-data` as `template_data.header.media.file`."
+                              }
+                            },
+                            "additionalProperties": false,
+                            "required": ["file"]
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["template_id"]
               }
             }
           }
@@ -2335,6 +2876,176 @@
         "responses": {
           "200": { "$ref": "#/components/responses/Paginate200" },
           "401": { "$ref": "#/components/responses/401" }
+        }
+      },
+      "post": {
+        "summary": "Create a template",
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "language", "category", "body"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "login_otp_template"
+                  },
+                  "language": {
+                    "type": "string",
+                    "example": "en"
+                  },
+                  "category": {
+                    "type": "string",
+                    "enum": ["MARKETING", "UTILITY", "AUTHENTICATION"]
+                  },
+                  "header": {
+                    "oneOf": [
+                      {
+                        "type": "null",
+                        "description": "Option 1: No header"
+                      },
+                      {
+                        "type": "object",
+                        "description": "Option 2: Text Header",
+                        "required": ["type", "text"],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": ["text"],
+                            "description": "Select 'text' for Text Header"
+                          },
+                          "text": {
+                            "type": "object",
+                            "required": ["content"],
+                            "properties": {
+                              "content": {
+                                "type": "string",
+                                "maxLength": 60
+                              },
+                              "variables": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "maxItems": 1
+                              }
+                            }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "description": "Option 3: Media Header",
+                        "required": ["type", "media"],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": ["media"],
+                            "description": "Select 'media' for Media Header"
+                          },
+                          "media": {
+                            "type": "object",
+                            "required": ["type", "file"],
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": ["image", "video", "document"]
+                              },
+                              "file": {
+                                "type": "string",
+                                "format": "binary"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "body": {
+                    "type": "object",
+                    "required": ["text"],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 1024
+                      },
+                      "otp_code": {
+                        "type": "string",
+                        "maxLength": 15,
+                        "description": "Required when category is AUTHENTICATION"
+                      },
+                      "variables": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "footer": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "buttons": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["type"],
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": ["URL", "PHONE_NUMBER", "QUICK_REPLY"]
+                        },
+                        "text": {
+                          "type": "string"
+                        },
+                        "phone_number": {
+                          "type": "string",
+                          "description": "Required for PHONE_NUMBER, Include country code, e.g., '14155552671'"
+                        },
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "Required for URL"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "unsubscribeButton": {
+                    "type": "boolean"
+                  },
+                  "blockButton": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Template created successfully"
+          },
+          "422": {
+            "description": "Validation failed"
+          }
         }
       }
     },

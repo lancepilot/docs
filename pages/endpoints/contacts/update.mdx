@@ -2,3 +2,44 @@
 title: 'Update Contact'
 openapi: 'POST /workspaces/{workspace}/contacts/{contact}'
 ---
+
+### JSON Example
+
+```json
+{
+  "name": "John Smith",
+  "email": "johnsmith@example.com",
+  "gender": "male",
+  "status": true
+}
+```
+
+### Multipart Form Data Example
+
+```
+PUT /contacts/123
+Content-Type: multipart/form-data
+
+name=John Smith
+email=johnsmith@example.com
+gender=male
+status=1
+avatar=@/path/to/avatar.png
+contact_groups[]=10
+contact_groups[]=12
+```
+
+---
+
+### 📝 Field Requirements for Update
+
+| Field            | Type                    | Required | Notes                                                    |
+| ---------------- | ----------------------- | -------- | -------------------------------------------------------- |
+| `name`           | string (max 50)         | Yes    | Contact’s display name                                     |
+| `email`          | string (email)          | No     | Contact email                                              |
+| `gender`         | enum(male,female,other) | No     | Gender of contact                                          |
+| `status`         | boolean                 | No     | Contact active status                                      |
+| `avatar`         | file (image ≤2MB)       | No     | Upload new avatar (form-data only)                         |
+| `contact_groups` | array of integers       | No     | Assign contact groups (form-data only, workspace scoped)   |
+
+

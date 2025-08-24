@@ -2,3 +2,47 @@
 title: 'Add Contacts'
 openapi: 'POST /workspaces/{workspace}/contacts'
 ---
+
+### JSON (Basic Contact)
+
+```json
+{
+  "number": "+14155550123",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "gender": "male"
+}
+```
+
+### Multipart Form Data (Extended Contact)
+
+If you want to upload an **avatar image**, assign **groups**, or set **status**, you must send the request as `multipart/form-data`. Example:
+
+```
+POST /contacts
+Content-Type: multipart/form-data
+
+number=+14155550123
+name=John Doe
+email=john@example.com
+gender=male
+status=1
+avatar=@/path/to/image.png
+contact_groups[]=12
+contact_groups[]=15
+```
+
+---
+
+### 📝 Field Requirements
+
+| Field            | Type                    | Required | Notes                                                                |
+| ---------------- | ----------------------- | -------- | -------------------------------------------------------------------- |
+| `number`         | string                  | Yes    | WhatsApp phone number (must be unique in workspace).                   |
+| `name`           | string (max 50)         | No     | Contact’s display name. Defaults to `Unknown` if not provided.         |
+| `email`          | string (email)          | No     | Contact’s email address.                                               |
+| `gender`         | enum(male,female,other) | No     | Gender of contact.                                                     |
+| `status`         | boolean                 | No     | Defaults to `true`. Only available in form-data requests.              |
+| `avatar`         | file (image, ≤2MB)      | No     | Upload contact avatar (form-data only).                                |
+| `contact_groups` | array of integers       | No     | Group IDs to assign contact into (form-data only, workspace scoped).   |
+---
