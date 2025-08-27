@@ -328,7 +328,7 @@
         "summary": "Create a contact",
         "description": "Create a new contact in the workspace.",
         "operationId": "createContact",
-         "parameters": [
+        "parameters": [
           {
             "name": "workspace",
             "in": "path",
@@ -495,7 +495,7 @@
           "404": { "$ref": "#/components/responses/404" }
         }
       },
-       "post": {
+      "post": {
         "summary": "Update a contact",
         "description": "Update an existing contact in the workspace.",
         "operationId": "updateContact",
@@ -3587,6 +3587,177 @@
                 }
               }
             }
+          },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/newsletters/{newsletter}/subscribe": {
+      "post": {
+        "summary": "Subscribe contact by contact_id",
+        "description": "This endpoint subscribes an existing contact to a newsletter using their **contact_id**.\n\nIt also allows updating name, email, and custom input fields. If automation is configured for the newsletter, an automation instance will be created.",
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "newsletter",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The newsletter ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contact_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Existing contact ID",
+                    "example": "e7b8d2a2-4c3f-4a1e-9c2e-123456789abc"
+                  },
+                  "name": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "John Doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "nullable": true,
+                    "format": "email",
+                    "example": "john@example.com"
+                  },
+                  "custom_input_value": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "value": {
+                          "type": "string",
+                          "example": "Some value"
+                        }
+                      },
+                      "required": ["id", "value"]
+                    }
+                  },
+                  "status": {
+                    "type": "boolean",
+                    "description": "true = subscribed, false = unsubscribed",
+                    "example": true
+                  }
+                },
+                "required": ["contact_id", "status"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      }
+    },
+    "/workspaces/{workspace}/newsletters/{newsletter}/subscribe-number": {
+      "post": {
+        "summary": "Subscribe contact by WhatsApp number",
+        "description": "This endpoint subscribes a contact to a newsletter using their **WhatsApp number**. If the contact does not exist, a new one will be created with default values.\n\nIt also supports updating name, email, and custom input fields. If automation is configured for the newsletter, an automation instance will be created.",
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "newsletter",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The newsletter ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "whatsapp_number": {
+                    "type": "string",
+                    "description": "WhatsApp phone number of the contact",
+                    "example": "+8801712345678"
+                  },
+                  "name": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "Jane Doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "nullable": true,
+                    "format": "email",
+                    "example": "jane@example.com"
+                  },
+                  "custom_input_value": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 2
+                        },
+                        "value": {
+                          "type": "string",
+                          "example": "Custom answer"
+                        }
+                      },
+                      "required": ["id", "value"]
+                    }
+                  },
+                  "status": {
+                    "type": "boolean",
+                    "description": "true = subscribed, false = unsubscribed",
+                    "example": true
+                  }
+                },
+                "required": ["whatsapp_number", "status"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
           },
           "401": { "$ref": "#/components/responses/401" },
           "404": { "$ref": "#/components/responses/404" }

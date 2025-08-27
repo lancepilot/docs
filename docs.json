@@ -153,6 +153,13 @@
                   "pages/endpoints/roles/update",
                   "pages/endpoints/roles/delete"
                 ]
+              },
+              {
+                "group": "Newsletters",
+                "pages": [
+                  "pages/endpoints/newsletters/subscribe",
+                  "pages/endpoints/newsletters/subscribe-number"
+                ]
               }
             ]
           }
