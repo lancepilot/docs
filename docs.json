@@ -42,6 +42,7 @@
                   "pages/endpoints/contacts/export",
                   "pages/endpoints/contacts/add",
                   "pages/endpoints/contacts/get",
+                  "pages/endpoints/contacts/get-number",
                   "pages/endpoints/contacts/update",
                   "pages/endpoints/contacts/delete"
                 ]

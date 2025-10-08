@@ -621,6 +621,40 @@
         }
       }
     },
+    "/workspaces/{workspace}/contacts/number/{number}": {
+      "get": {
+        "summary": "Get Contact by Number",
+        "description": "Retrieve a specific contact by WhatsApp number in the workspace.",
+        "tags": ["Contacts"],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "description": "WhatsApp number of the contact (with country code, without '+' symbol). Example: 14155550123",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "14155550123"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/200" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" }
+        }
+      }
+    },
     "/workspaces/{workspace}/contacts/{contact}/can-send-free-message": {
       "get": {
         "summary": "Check Can Send Free Message",
