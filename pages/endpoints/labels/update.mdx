@@ -1,0 +1,30 @@
+---
+title: 'Update Label'
+openapi: 'PUT /workspaces/{workspace}/labels/{label}'
+---
+
+### JSON Request Example
+
+```json
+{
+  "name": "Very Important",
+  "color": "#00AA00"
+}
+```
+
+---
+
+### 📝 Field Requirements
+
+| Field   | Type             | Required | Notes                                                      |
+| ------- | ---------------- | -------- | ---------------------------------------------------------- |
+| `name`  | string (max 255) | Yes      | New label name (must be unique within the workspace).      |
+| `color` | string (max 7)   | No       | Hex color code (e.g., #00AA00). Optional.                  |
+
+---
+
+### 💡 Notes
+
+- The label name must remain unique within the workspace
+- You can update just the name, just the color, or both fields
+- Updating a label does not affect contacts already tagged with this label

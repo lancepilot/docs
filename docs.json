@@ -18,7 +18,9 @@
         "groups": [
           {
             "group": "Documentation",
-            "pages": ["index"]
+            "pages": [
+              "index"
+            ]
           },
           {
             "group": "API Reference",
@@ -105,6 +107,26 @@
                   "pages/endpoints/contact-group/get",
                   "pages/endpoints/contact-group/update",
                   "pages/endpoints/contact-group/delete"
+                ]
+              },
+              {
+                "group": "Labels",
+                "pages": [
+                  "pages/endpoints/labels/list",
+                  "pages/endpoints/labels/add",
+                  "pages/endpoints/labels/get",
+                  "pages/endpoints/labels/update",
+                  "pages/endpoints/labels/delete"
+                ]
+              },
+              {
+                "group": "Tags",
+                "pages": [
+                  "pages/endpoints/tags/list",
+                  "pages/endpoints/tags/add",
+                  "pages/endpoints/tags/get",
+                  "pages/endpoints/tags/update",
+                  "pages/endpoints/tags/delete"
                 ]
               },
               {

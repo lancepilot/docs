@@ -1,0 +1,30 @@
+---
+title: 'Create Label'
+openapi: 'POST /workspaces/{workspace}/labels'
+---
+
+### JSON Request Example
+
+```json
+{
+  "name": "Important",
+  "color": "#FF5733"
+}
+```
+
+---
+
+### 📝 Field Requirements
+
+| Field   | Type             | Required | Notes                                                      |
+| ------- | ---------------- | -------- | ---------------------------------------------------------- |
+| `name`  | string (max 255) | Yes      | Label name (must be unique within the workspace).          |
+| `color` | string (max 7)   | No       | Hex color code (e.g., #FF5733). Defaults to null if omitted. |
+
+---
+
+### 💡 Notes
+
+- Label names must be unique within each workspace
+- The `color` field accepts standard hex color codes with the `#` prefix
+- Labels can be used to organize and categorize contacts

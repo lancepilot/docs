@@ -1,0 +1,28 @@
+---
+title: 'Create Tag'
+openapi: 'POST /workspaces/{workspace}/tags'
+---
+
+### JSON Request Example
+
+```json
+{
+  "name": "VIP"
+}
+```
+
+---
+
+### 📝 Field Requirements
+
+| Field  | Type             | Required | Notes                                                    |
+| ------ | ---------------- | -------- | -------------------------------------------------------- |
+| `name` | string (max 255) | Yes      | Tag name (must be unique within the workspace).          |
+
+---
+
+### 💡 Notes
+
+- Tag names must be unique within each workspace
+- Tags can be used to organize and categorize contacts
+- Unlike labels, tags do not have a color property

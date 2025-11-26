@@ -1,0 +1,27 @@
+---
+title: 'Update Tag'
+openapi: 'PUT /workspaces/{workspace}/tags/{tag}'
+---
+
+### JSON Request Example
+
+```json
+{
+  "name": "Premium VIP"
+}
+```
+
+---
+
+### 📝 Field Requirements
+
+| Field  | Type             | Required | Notes                                                    |
+| ------ | ---------------- | -------- | -------------------------------------------------------- |
+| `name` | string (max 255) | Yes      | New tag name (must be unique within the workspace).      |
+
+---
+
+### 💡 Notes
+
+- The tag name must remain unique within the workspace
+- Updating a tag does not affect contacts already tagged with this tag
