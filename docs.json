@@ -46,7 +46,9 @@
                   "pages/endpoints/contacts/get",
                   "pages/endpoints/contacts/get-number",
                   "pages/endpoints/contacts/update",
-                  "pages/endpoints/contacts/delete"
+                  "pages/endpoints/contacts/delete",
+                  "pages/endpoints/contacts/toggle-label",
+                  "pages/endpoints/contacts/toggle-tag"
                 ]
               },
               {

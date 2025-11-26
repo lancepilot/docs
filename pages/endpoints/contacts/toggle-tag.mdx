@@ -1,0 +1,38 @@
+---
+title: 'Toggle Contact Tag'
+openapi: 'POST /workspaces/{workspace}/contact/{contact}/toggle-tag'
+---
+
+### JSON Example
+
+```json
+{
+  "tag_id": 3
+}
+```
+
+---
+
+### 📝 Field Requirements
+
+| Field    | Type    | Required | Notes                                                  |
+| -------- | ------- | -------- | ------------------------------------------------------ |
+| `tag_id` | integer | Yes      | ID of the tag to toggle (must exist in workspace)     |
+
+---
+
+### 🔄 Behavior
+
+This endpoint toggles a tag on a contact:
+- If the tag is **not** currently assigned to the contact, it will be **added**
+- If the tag is **already** assigned to the contact, it will be **removed**
+
+### ✅ Success Response
+
+```json
+{
+  "status": 200,
+  "message": "Contact tag toggled successfully",
+  "data": null
+}
+```

@@ -1106,6 +1106,188 @@
         }
       }
     },
+    "/workspaces/{workspace}/contact/{contact}/toggle-label": {
+      "post": {
+        "summary": "Toggle Label on Contact",
+        "description": "Attach or detach a label from a contact. If the label is already attached, it will be detached, and vice versa.",
+        "tags": [
+          "Contacts"
+        ],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "description": "ID of the contact.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "label_id"
+                ],
+                "properties": {
+                  "label_id": {
+                    "type": "integer",
+                    "description": "ID of the label to toggle."
+                  }
+                }
+              },
+              "examples": {
+                "toggle": {
+                  "summary": "Toggle Label",
+                  "value": {
+                    "label_id": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Label toggled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Contact label toggled successfully"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          }
+        }
+      }
+    },
+    "/workspaces/{workspace}/contact/{contact}/toggle-tag": {
+      "post": {
+        "summary": "Toggle Tag on Contact",
+        "description": "Attach or detach a tag from a contact. If the tag is already attached, it will be detached, and vice versa.",
+        "tags": [
+          "Contacts"
+        ],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contact",
+            "in": "path",
+            "description": "ID of the contact.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "tag_id"
+                ],
+                "properties": {
+                  "tag_id": {
+                    "type": "integer",
+                    "description": "ID of the tag to toggle."
+                  }
+                }
+              },
+              "examples": {
+                "toggle": {
+                  "summary": "Toggle Tag",
+                  "value": {
+                    "tag_id": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tag toggled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Contact tag toggled successfully"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          }
+        }
+      }
+    },
     "/workspaces/{workspace}/contacts/number/{number}/can-send-free-message": {
       "get": {
         "summary": "Check Can Send Free Message",
