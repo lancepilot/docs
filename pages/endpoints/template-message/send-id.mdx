@@ -5,45 +5,425 @@ openapi: 'POST /workspaces/{workspace}/contacts/{contact}/template-messages'
 
 ### Description
 
-This endpoint allows you to send a template message with optional media in the header.
-You can provide the media in two ways:
+This endpoint allows you to send WhatsApp template messages to a contact using their contact ID. Templates can include various components such as headers (text/media), body text with variables, footers, and buttons.
 
-1. **Media URL**: Pass the media URL in `template_data.header.media.file`.
-2. **Uploaded File**: Send the media as a file instance using `multipart/form-data` in the same field (`template_data.header.media.file`).
+---
 
-### File Field Requirements
+## Template Components
 
-* **file**:
+Templates may contain the following components:
 
-  * **Required** (when template has media header)
-  * **Allowed types**: `image`, `video`, `document`
-  * **Maximum size**: 16 MB (`max:16384` KB)
+- **Header**: Text (with variables) or Media (image, video, document)
+- **Body**: Message text with dynamic variables (`{{1}}`, `{{2}}`, etc.)
+- **Footer**: Static footer text
+- **Buttons**: URL buttons (with variables), phone buttons, or quick reply buttons
 
-### Request Options
+---
 
-* **Media URL Example (JSON):**
+## Request Payload Structure
+
+### Basic Structure
 
 ```json
 {
-  "template_id": 12,
+  "template_id": 123,
   "template_data": {
     "header": {
-      "media": {
-        "file": "https://example.com/sample-image.jpg"
+      "variables": ["Header Variable"],
+      "file": "https://example.com/image.jpg"
+    },
+    "body": {
+      "variables": ["Variable 1", "Variable 2"]
+    },
+    "buttons": [
+      {
+        "type": "URL",
+        "variables": ["promo-code-123"]
       }
+    ]
+  }
+}
+```
+
+---
+
+## Examples by Template Type
+
+### 1. Simple Body-Only Template
+
+For templates with only body text and no variables:
+
+```json
+{
+  "template_id": 123,
+  "template_data": {}
+}
+```
+
+---
+
+### 2. Body with Variables
+
+Template body: `"Hello \{\{1\}\}, your order \{\{2\}\} is confirmed!"`
+
+```json
+{
+  "template_id": 123,
+  "template_data": {
+    "body": {
+      "variables": ["John Doe", "#12345"]
     }
   }
 }
 ```
 
-* **Uploaded File Example (multipart/form-data):**
+**Validation Rules:**
+- Maximum 20 variables in body
+- Each variable max 1000 characters
+- Total body length (with variables) max 1024 characters
+- Authentication templates: variables max 11 characters, no links allowed
 
+---
+
+### 3. Text Header with Variables
+
+Template header: `"Welcome \{\{1\}\}!"`
+
+```json
+{
+  "template_id": 123,
+  "template_data": {
+    "header": {
+      "variables": ["Premium Member"]
+    },
+    "body": {
+      "variables": ["John", "Gold Tier"]
+    }
+  }
+}
 ```
-POST /api/v3/send-template-message
+
+**Validation Rules:**
+- Maximum 1 variable in text header
+- Variable max 60 characters
+- Total header length (with variables) max 60 characters
+
+---
+
+### 4. Image Header Template
+
+#### Option A: Using Image URL (JSON)
+
+```json
+{
+  "template_id": 123,
+  "template_data": {
+    "header": {
+      "file": "https://example.com/product-image.jpg"
+    },
+    "body": {
+      "variables": ["Product Name", "$99.99"]
+    }
+  }
+}
+```
+
+#### Option B: Uploading Image File (multipart/form-data)
+
+```bash
+POST /api/v3/workspaces/{workspace}/contacts/{contact}/template-messages
 Content-Type: multipart/form-data
 
-template_id: 12
-template_data[header][media][file]: [binary file]
+template_id: 123
+template_data[header][file]: [binary image file]
+template_data[body][variables][0]: Product Name
+template_data[body][variables][1]: $99.99
+```
+
+**Validation Rules:**
+- Allowed types: jpg, jpeg, png
+- Maximum size: 5 MB (5120 KB)
+
+---
+
+### 5. Video Header Template
+
+#### Using Video URL
+
+```json
+{
+  "template_id": 123,
+  "template_data": {
+    "header": {
+      "file": "https://example.com/demo-video.mp4"
+    },
+    "body": {
+      "variables": ["John", "Premium Course"]
+    }
+  }
+}
+```
+
+#### Uploading Video File
+
+```bash
+POST /api/v3/workspaces/{workspace}/contacts/{contact}/template-messages
+Content-Type: multipart/form-data
+
+template_id: 123
+template_data[header][file]: [binary video file]
+template_data[body][variables][0]: John
+template_data[body][variables][1]: Premium Course
+```
+
+**Validation Rules:**
+- Allowed type: video/mp4
+- Maximum size: 16 MB (16384 KB)
+
+---
+
+### 6. Document Header Template
+
+#### Using Document URL
+
+```json
+{
+  "template_id": 123,
+  "template_data": {
+    "header": {
+      "file": "https://example.com/invoice.pdf"
+    },
+    "body": {
+      "variables": ["Invoice #12345", "$500.00"]
+    }
+  }
+}
+```
+
+#### Uploading Document File
+
+```bash
+POST /api/v3/workspaces/{workspace}/contacts/{contact}/template-messages
+Content-Type: multipart/form-data
+
+template_id: 123
+template_data[header][file]: [binary PDF file]
+template_data[body][variables][0]: Invoice #12345
+template_data[body][variables][1]: $500.00
+```
+
+**Validation Rules:**
+- Allowed type: application/pdf
+- Maximum size: 30 MB (30720 KB)
+
+---
+
+### 7. Authentication/OTP Template
+
+For one-time password templates:
+
+```json
+{
+  "template_id": 123,
+  "template_data": {
+    "body": {
+      "variables": ["123456"]
+    }
+  }
+}
+```
+
+**Validation Rules:**
+- Variables max 11 characters
+- No links allowed in variables
+
+---
+
+### 8. URL Button with Variables
+
+Template with dynamic URL button: `https://example.com/promo/\{\{1\}\}`
+
+```json
+{
+  "template_id": 123,
+  "template_data": {
+    "body": {
+      "variables": ["John", "SAVE20"]
+    },
+    "buttons": [
+      {
+        "type": "URL",
+        "variables": ["SAVE20"]
+      }
+    ]
+  }
+}
+```
+
+**Validation Rules:**
+- Each URL button variable max 2000 characters
+- Number of variables must match template definition
+
+---
+
+### 9. Multiple URL Buttons with Variables
+
+For templates with multiple URL buttons:
+
+```json
+{
+  "template_id": 123,
+  "template_data": {
+    "body": {
+      "variables": ["Order #12345"]
+    },
+    "buttons": [
+      {
+        "type": "URL",
+        "variables": ["12345"]
+      },
+      {
+        "type": "URL",
+        "variables": ["track-code-xyz"]
+      }
+    ]
+  }
+}
+```
+
+---
+
+### 10. Complex Template (All Components)
+
+Image header + body variables + URL button with variable:
+
+```json
+{
+  "template_id": 123,
+  "template_data": {
+    "header": {
+      "file": "https://example.com/banner.jpg"
+    },
+    "body": {
+      "variables": ["John Doe", "Premium Plan", "$99.99", "December 31, 2025"]
+    },
+    "buttons": [
+      {
+        "type": "URL",
+        "variables": ["user-123-token-abc"]
+      }
+    ]
+  }
+}
+```
+
+---
+
+## Media File Requirements
+
+### Image Header
+- **Required**: When template has image header
+- **Allowed types**: jpg, jpeg, png
+- **Maximum size**: 5 MB (5120 KB)
+
+### Video Header
+- **Required**: When template has video header
+- **Allowed type**: mp4
+- **Maximum size**: 16 MB (16384 KB)
+
+### Document Header
+- **Required**: When template has document header
+- **Allowed type**: PDF
+- **Maximum size**: 30 MB (30720 KB)
+
+---
+
+## Complete Example with cURL
+
+```bash
+# JSON request with image URL
+curl -X POST "https://lancepilot.com/api/v3/workspaces/123/contacts/456/template-messages" \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "template_id": 789,
+    "template_data": {
+      "header": {
+        "file": "https://example.com/product.jpg"
+      },
+      "body": {
+        "variables": ["John Doe", "Premium Package", "$149.99"]
+      },
+      "buttons": [
+        {
+          "type": "URL",
+          "variables": ["promo2025"]
+        }
+      ]
+    }
+  }'
+
+# Multipart form-data request with file upload
+curl -X POST "https://lancepilot.com/api/v3/workspaces/123/contacts/456/template-messages" \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -F "template_id=789" \
+  -F "template_data[header][file]=@/path/to/image.jpg" \
+  -F "template_data[body][variables][0]=John Doe" \
+  -F "template_data[body][variables][1]=Premium Package" \
+  -F "template_data[body][variables][2]=$149.99" \
+  -F "template_data[buttons][0][type]=URL" \
+  -F "template_data[buttons][0][variables][0]=promo2025"
+```
+
+---
+
+## Error Responses
+
+### Invalid Template ID
+```json
+{
+  "message": "Template not found"
+}
+```
+
+### Missing Required Variables
+```json
+{
+  "message": "The body.variables field is required.",
+  "errors": {
+    "body.variables": ["The body.variables field is required."]
+  }
+}
+```
+
+### Variable Count Mismatch
+```json
+{
+  "message": "The body.variables must have at least 3 items.",
+  "errors": {
+    "body.variables": ["The body.variables must have at least 3 items."]
+  }
+}
+```
+
+### Body Text Too Long
+```json
+{
+  "message": "Message body with all variable values is too long, it can be max 1024 characters",
+  "errors": {
+    "body.text": ["Message body with all variable values is too long, it can be max 1024 characters"]
+  }
+}
+```
+
+### Invalid Media File
+```json
+{
+  "message": "The header.file must be a file of type: jpg, jpeg, png.",
+  "errors": {
+    "header.file": ["The header.file must be a file of type: jpg, jpeg, png."]
+  }
+}
 ```
 
 ---

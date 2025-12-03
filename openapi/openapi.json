@@ -2377,8 +2377,11 @@
     },
     "/workspaces/{workspace}/contacts/{contact}/template-messages": {
       "post": {
-        "summary": "Send Template Message",
-        "description": "",
+        "summary": "Send Template Message (Contact ID)",
+        "description": "Send a WhatsApp template message to a contact using their contact ID. Templates can include text/media headers, body with variables, footers, and buttons.",
+        "tags": [
+          "Template Messages"
+        ],
         "parameters": [
           {
             "name": "workspace",
@@ -2393,7 +2396,7 @@
           {
             "name": "contact",
             "in": "path",
-            "description": "Id of the contact.",
+            "description": "ID of the contact.",
             "required": true,
             "schema": {
               "type": "string",
@@ -2410,34 +2413,285 @@
                 "properties": {
                   "template_id": {
                     "type": "integer",
-                    "example": 12
+                    "example": 123,
+                    "description": "ID of the approved template to send."
                   },
                   "template_data": {
                     "type": "object",
+                    "description": "Template data containing variables and media files. Structure depends on template configuration.",
                     "properties": {
                       "header": {
                         "type": "object",
+                        "description": "Header data (text variables or media file).",
                         "properties": {
-                          "media": {
-                            "type": "object",
-                            "properties": {
-                              "file": {
+                          "variables": {
+                            "type": "array",
+                            "description": "Text header variables (max 1 variable, max 60 characters each).",
+                            "maxItems": 1,
+                            "items": {
+                              "type": "string",
+                              "maxLength": 60
+                            },
+                            "example": [
+                              "Premium Member"
+                            ]
+                          },
+                          "file": {
+                            "oneOf": [
+                              {
                                 "type": "string",
                                 "format": "uri",
-                                "example": "https://example.com/sample-image.jpg",
-                                "description": "Media URL. **Alternative option:** You can also upload a file here using `multipart/form-data` as `template_data.header.media.file`."
+                                "description": "Media URL for header (image/video/document)."
+                              },
+                              {
+                                "type": "string",
+                                "format": "binary",
+                                "description": "Binary file upload (use multipart/form-data)."
                               }
+                            ],
+                            "example": "https://example.com/product-image.jpg"
+                          }
+                        }
+                      },
+                      "body": {
+                        "type": "object",
+                        "description": "Body text variables.",
+                        "properties": {
+                          "variables": {
+                            "type": "array",
+                            "description": "Body variables (max 20 variables, max 1000 characters each, max 1024 characters total after replacement).",
+                            "maxItems": 20,
+                            "items": {
+                              "type": "string",
+                              "maxLength": 1000
                             },
-                            "additionalProperties": false,
-                            "required": [
-                              "file"
+                            "example": [
+                              "John Doe",
+                              "Premium Package",
+                              "$149.99"
                             ]
                           }
                         },
-                        "additionalProperties": false
+                        "required": [
+                          "variables"
+                        ]
+                      },
+                      "buttons": {
+                        "type": "array",
+                        "description": "URL button variables (for dynamic URL parameters).",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "URL"
+                              ],
+                              "example": "URL"
+                            },
+                            "variables": {
+                              "type": "array",
+                              "description": "URL variables (max 2000 characters each).",
+                              "items": {
+                                "type": "string",
+                                "maxLength": 2000
+                              },
+                              "example": [
+                                "promo-code-2025"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "variables"
+                          ]
+                        }
                       }
-                    },
-                    "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "template_id"
+                ]
+              },
+              "examples": {
+                "simple_body": {
+                  "summary": "Simple body-only template",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {}
+                  }
+                },
+                "body_with_variables": {
+                  "summary": "Body with variables",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {
+                      "body": {
+                        "variables": [
+                          "John Doe",
+                          "#12345"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "text_header_variables": {
+                  "summary": "Text header with variables",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {
+                      "header": {
+                        "variables": [
+                          "Premium Member"
+                        ]
+                      },
+                      "body": {
+                        "variables": [
+                          "John",
+                          "Gold Tier"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "image_header_url": {
+                  "summary": "Image header with URL",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {
+                      "header": {
+                        "file": "https://example.com/product-image.jpg"
+                      },
+                      "body": {
+                        "variables": [
+                          "Product Name",
+                          "$99.99"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "video_header_url": {
+                  "summary": "Video header with URL",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {
+                      "header": {
+                        "file": "https://example.com/demo-video.mp4"
+                      },
+                      "body": {
+                        "variables": [
+                          "John",
+                          "Premium Course"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "document_header_url": {
+                  "summary": "Document header with URL",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {
+                      "header": {
+                        "file": "https://example.com/invoice.pdf"
+                      },
+                      "body": {
+                        "variables": [
+                          "Invoice #12345",
+                          "$500.00"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "url_button_variables": {
+                  "summary": "URL button with variables",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {
+                      "body": {
+                        "variables": [
+                          "John",
+                          "SAVE20"
+                        ]
+                      },
+                      "buttons": [
+                        {
+                          "type": "URL",
+                          "variables": [
+                            "SAVE20"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "complex_template": {
+                  "summary": "Complex template (all components)",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {
+                      "header": {
+                        "file": "https://example.com/banner.jpg"
+                      },
+                      "body": {
+                        "variables": [
+                          "John Doe",
+                          "Premium Plan",
+                          "$99.99",
+                          "December 31, 2025"
+                        ]
+                      },
+                      "buttons": [
+                        {
+                          "type": "URL",
+                          "variables": [
+                            "user-123-token-abc"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "template_id": {
+                    "type": "integer",
+                    "example": 123
+                  },
+                  "template_data[header][file]": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Image (jpg/jpeg/png, max 5MB), Video (mp4, max 16MB), or Document (pdf, max 30MB)."
+                  },
+                  "template_data[header][variables][0]": {
+                    "type": "string",
+                    "description": "Text header variable (if applicable)."
+                  },
+                  "template_data[body][variables][0]": {
+                    "type": "string",
+                    "description": "First body variable."
+                  },
+                  "template_data[body][variables][1]": {
+                    "type": "string",
+                    "description": "Second body variable."
+                  },
+                  "template_data[buttons][0][type]": {
+                    "type": "string",
+                    "enum": [
+                      "URL"
+                    ],
+                    "description": "Button type."
+                  },
+                  "template_data[buttons][0][variables][0]": {
+                    "type": "string",
+                    "description": "URL button variable."
                   }
                 },
                 "required": [
@@ -2451,22 +2705,97 @@
           "201": {
             "$ref": "#/components/responses/201"
           },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Only template messages are allowed for this contact"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
             "$ref": "#/components/responses/401"
           },
           "404": {
-            "$ref": "#/components/responses/404"
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Template not found"
+                    }
+                  }
+                }
+              }
+            }
           },
           "422": {
-            "$ref": "#/components/responses/422"
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "The body.variables field is required."
+                    },
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "example": {
+                        "body.variables": [
+                          "The body.variables field is required."
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to send message"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/workspaces/{workspace}/contacts/number/{number}/template-messages": {
       "post": {
-        "summary": "Send Template Message",
-        "description": "",
+        "summary": "Send Template Message (Phone Number)",
+        "description": "Send a WhatsApp template message to a contact using their phone number. If the contact doesn't exist, it will be automatically created. Templates can include text/media headers, body with variables, footers, and buttons.",
+        "tags": [
+          "Template Messages"
+        ],
         "parameters": [
           {
             "name": "workspace",
@@ -2481,11 +2810,12 @@
           {
             "name": "number",
             "in": "path",
-            "description": "Number of the contact.",
+            "description": "WhatsApp phone number in international format without + symbol (e.g., 14155552671 for US, 447911123456 for UK).",
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "pattern": "^[1-9][0-9]{7,14}$",
+              "example": "14155552671"
             }
           }
         ],
@@ -2498,34 +2828,285 @@
                 "properties": {
                   "template_id": {
                     "type": "integer",
-                    "example": 12
+                    "example": 123,
+                    "description": "ID of the approved template to send."
                   },
                   "template_data": {
                     "type": "object",
+                    "description": "Template data containing variables and media files. Structure depends on template configuration.",
                     "properties": {
                       "header": {
                         "type": "object",
+                        "description": "Header data (text variables or media file).",
                         "properties": {
-                          "media": {
-                            "type": "object",
-                            "properties": {
-                              "file": {
+                          "variables": {
+                            "type": "array",
+                            "description": "Text header variables (max 1 variable, max 60 characters each).",
+                            "maxItems": 1,
+                            "items": {
+                              "type": "string",
+                              "maxLength": 60
+                            },
+                            "example": [
+                              "Premium Member"
+                            ]
+                          },
+                          "file": {
+                            "oneOf": [
+                              {
                                 "type": "string",
                                 "format": "uri",
-                                "example": "https://example.com/sample-image.jpg",
-                                "description": "Media URL. **Alternative option:** You can also upload a file here using `multipart/form-data` as `template_data.header.media.file`."
+                                "description": "Media URL for header (image/video/document)."
+                              },
+                              {
+                                "type": "string",
+                                "format": "binary",
+                                "description": "Binary file upload (use multipart/form-data)."
                               }
+                            ],
+                            "example": "https://example.com/product-image.jpg"
+                          }
+                        }
+                      },
+                      "body": {
+                        "type": "object",
+                        "description": "Body text variables.",
+                        "properties": {
+                          "variables": {
+                            "type": "array",
+                            "description": "Body variables (max 20 variables, max 1000 characters each, max 1024 characters total after replacement).",
+                            "maxItems": 20,
+                            "items": {
+                              "type": "string",
+                              "maxLength": 1000
                             },
-                            "additionalProperties": false,
-                            "required": [
-                              "file"
+                            "example": [
+                              "John Doe",
+                              "Premium Package",
+                              "$149.99"
                             ]
                           }
                         },
-                        "additionalProperties": false
+                        "required": [
+                          "variables"
+                        ]
+                      },
+                      "buttons": {
+                        "type": "array",
+                        "description": "URL button variables (for dynamic URL parameters).",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "URL"
+                              ],
+                              "example": "URL"
+                            },
+                            "variables": {
+                              "type": "array",
+                              "description": "URL variables (max 2000 characters each).",
+                              "items": {
+                                "type": "string",
+                                "maxLength": 2000
+                              },
+                              "example": [
+                                "promo-code-2025"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "variables"
+                          ]
+                        }
                       }
-                    },
-                    "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "template_id"
+                ]
+              },
+              "examples": {
+                "simple_body": {
+                  "summary": "Simple body-only template",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {}
+                  }
+                },
+                "body_with_variables": {
+                  "summary": "Body with variables",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {
+                      "body": {
+                        "variables": [
+                          "John Doe",
+                          "#12345"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "text_header_variables": {
+                  "summary": "Text header with variables",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {
+                      "header": {
+                        "variables": [
+                          "Premium Member"
+                        ]
+                      },
+                      "body": {
+                        "variables": [
+                          "John",
+                          "Gold Tier"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "image_header_url": {
+                  "summary": "Image header with URL",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {
+                      "header": {
+                        "file": "https://example.com/product-image.jpg"
+                      },
+                      "body": {
+                        "variables": [
+                          "Product Name",
+                          "$99.99"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "video_header_url": {
+                  "summary": "Video header with URL",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {
+                      "header": {
+                        "file": "https://example.com/demo-video.mp4"
+                      },
+                      "body": {
+                        "variables": [
+                          "John",
+                          "Premium Course"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "document_header_url": {
+                  "summary": "Document header with URL",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {
+                      "header": {
+                        "file": "https://example.com/invoice.pdf"
+                      },
+                      "body": {
+                        "variables": [
+                          "Invoice #12345",
+                          "$500.00"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "url_button_variables": {
+                  "summary": "URL button with variables",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {
+                      "body": {
+                        "variables": [
+                          "John",
+                          "SAVE20"
+                        ]
+                      },
+                      "buttons": [
+                        {
+                          "type": "URL",
+                          "variables": [
+                            "SAVE20"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "complex_template": {
+                  "summary": "Complex template (all components)",
+                  "value": {
+                    "template_id": 123,
+                    "template_data": {
+                      "header": {
+                        "file": "https://example.com/banner.jpg"
+                      },
+                      "body": {
+                        "variables": [
+                          "John Doe",
+                          "Premium Plan",
+                          "$99.99",
+                          "December 31, 2025"
+                        ]
+                      },
+                      "buttons": [
+                        {
+                          "type": "URL",
+                          "variables": [
+                            "user-123-token-abc"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "template_id": {
+                    "type": "integer",
+                    "example": 123
+                  },
+                  "template_data[header][file]": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Image (jpg/jpeg/png, max 5MB), Video (mp4, max 16MB), or Document (pdf, max 30MB)."
+                  },
+                  "template_data[header][variables][0]": {
+                    "type": "string",
+                    "description": "Text header variable (if applicable)."
+                  },
+                  "template_data[body][variables][0]": {
+                    "type": "string",
+                    "description": "First body variable."
+                  },
+                  "template_data[body][variables][1]": {
+                    "type": "string",
+                    "description": "Second body variable."
+                  },
+                  "template_data[buttons][0][type]": {
+                    "type": "string",
+                    "enum": [
+                      "URL"
+                    ],
+                    "description": "Button type."
+                  },
+                  "template_data[buttons][0][variables][0]": {
+                    "type": "string",
+                    "description": "URL button variable."
                   }
                 },
                 "required": [
@@ -2539,14 +3120,86 @@
           "201": {
             "$ref": "#/components/responses/201"
           },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Only template messages are allowed for this contact"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
             "$ref": "#/components/responses/401"
           },
           "404": {
-            "$ref": "#/components/responses/404"
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Template not found"
+                    }
+                  }
+                }
+              }
+            }
           },
           "422": {
-            "$ref": "#/components/responses/422"
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid Number"
+                    },
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "example": {
+                        "body.variables": [
+                          "The body.variables field is required."
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to send message"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
