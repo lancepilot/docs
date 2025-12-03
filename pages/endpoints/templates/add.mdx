@@ -3,80 +3,466 @@ title: 'Add Template'
 openapi: 'POST /workspaces/{workspace}/templates'
 ---
 
-## **Request Body Schema**
+## Overview
+
+Create a new WhatsApp message template. Templates must be approved by Meta before they can be used to send messages.
+
+<Info>
+  Templates typically take 5-30 minutes for approval. Use the [Sync endpoint](/pages/endpoints/templates/sync) to check approval status.
+</Info>
+
+---
+
+## Request Body Schema
 
 | Field               | Type          | Required       | Description                                                                                                                                               |
 | ------------------- | ------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `name`              | string        | Yes            | Unique template name (only lowercase + underscores).                                                                                                      |
-| `language`          | string        | Yes            | Language code (e.g., `en`, `bn`).                                                                                                                         |
+| `language`          | string        | Yes            | Language code (e.g., `en`, `es`, `fr`).                                                                                                                   |
 | `category`          | string        | Yes            | One of: `MARKETING`, `UTILITY`, `AUTHENTICATION`.                                                                                                         |
-| `header`            | object / null | No             | Template header. Can be: <br /> - `null` → No header <br /> - `text` → Text header (max 60 chars) <br /> - `media` → Media header (image/video/document). |
+| `header`            | object/null   | No             | Template header. Can be `null`, `text`, or `media` (image/video/document).                                                                                |
 | `body`              | object        | Yes            | Main message body. Supports variables (`{{1}}`, `{{2}}`).                                                                                                 |
 | `body.text`         | string        | Yes            | Message text (max 1024 chars).                                                                                                                            |
-| `body.otp_code`     | string        | Auth only      | Required for `AUTHENTICATION` templates (max 15 chars).                                                                                                   |
-| `body.variables`    | array         | No             | Variable placeholders (strings).                                                                                                                          |
+| `body.variables`    | array         | Conditional    | Required if variables exist in text.                                                                                                                      |
 | `footer`            | string        | No             | Footer text (max 60 chars, no emojis).                                                                                                                    |
-| `buttons`           | array         | No             | Interactive buttons (URL, Phone, Quick Reply).                                                                                                            |
-| `unsubscribeButton` | boolean       | No             | Whether to show **Unsubscribe** option.                                                                                                                   |
-| `blockButton`       | boolean       | No             | Whether to show **Block** option.                                                                                                                         |
+| `buttons`           | array         | No             | Interactive buttons (URL, Phone, Quick Reply). Max 3.                                                                                                     |
+| `unsubscribeButton` | boolean       | No             | Show **Unsubscribe** button (MARKETING only).                                                                                                             |
+| `blockButton`       | boolean       | No             | Show **Block** button (MARKETING only).                                                                                                                   |
+| `addSecurityRecommendation` | boolean | Auth only  | Include security warning (AUTHENTICATION only).                                                                                                           |
+| `codeExpirationMinutes` | integer     | Auth only  | OTP validity period in minutes (1-1440, AUTHENTICATION only).                                                                                             |
+| `copyCodeButton`    | boolean       | Auth only      | Add one-tap copy button (AUTHENTICATION only).                                                                                                            |
 
 ---
-## **Example Payloads for All type Template**
-Since JSON doesn’t support comments, Write it in **pseudo-JSON with `// comments`**.
-(You can later remove the comments for real JSON.)
 
-```jsonc
+## Complete Examples
+
+### Example 1: Marketing Template with Image Header
+
+```json
 {
-  "name": "template_name",                  // required (unique, lowercase + underscores)
-  "language": "en",                         // required
-  "category": "MARKETING",                  // required: MARKETING | UTILITY | AUTHENTICATION
-
-  // ----- HEADER -----
-  // if header not needed => omit "header" or set to null
-  // if header.type = "text" => send "header.text"
-  // if header.type = "media" => send "header.media"
-
+  "name": "summer_sale_promo",
+  "language": "en",
+  "category": "MARKETING",
   "header": {
-    "type": "text",                         // "text" OR "media" OR null
-    "text": {                               // required if header.type = "text"
-      "content": "Payment Receipt",         // required, max 60 chars
-      "variables": []                       // optional, max 1 item
-    },
-    "media": {                              // required if header.type = "media"
-      "type": "image",                      // image | video | document
-      "file": "data:image/png;base64,..."   // required if header.type = "media"
+    "type": "media",
+    "media": {
+      "type": "image",
+      "file": "<binary_file_data>"
     }
   },
-
-  // ----- BODY -----
   "body": {
-    "text": "Hello {{1}}, your OTP is {{2}}",   // required, max 1024 chars
-    "otp_code": "{{2}}",                        // required ONLY when category = AUTHENTICATION
-    "variables": ["John Doe", "123456"]         // required if variables exist in text
+    "text": "Hi {{1}}! 🎉\n\nOur Summer Sale is here! Get {{2}}% off on all items. Use code: {{3}}\n\nHurry, offer ends soon!",
+    "variables": ["John", "30", "SUMMER30"]
   },
-
-  "footer": "Thank you for choosing us",        // optional, max 60 chars
-
-  // ----- BUTTONS -----
+  "footer": "Terms and conditions apply",
   "buttons": [
     {
-      "type": "URL",                            // required: URL | PHONE_NUMBER | QUICK_REPLY
-      "text": "Visit Website",                  // required if type != PHONE_NUMBER
-      "url": "https://example.com"              // required if type = URL
-    },
-    {
-      "type": "PHONE_NUMBER",
-      "phone_number": "+880123456789"           // required if type = PHONE_NUMBER
-    },
-    {
-      "type": "QUICK_REPLY",
-      "text": "Yes"                             // required if type = QUICK_REPLY
+      "type": "URL",
+      "text": "Shop Now",
+      "url": "https://example.com/sale"
     }
   ],
-
-  "unsubscribeButton": true,                    // optional, boolean
-  "blockButton": false                          // optional, boolean
+  "unsubscribeButton": true
 }
 ```
 
+### Example 2: Authentication (OTP) Template
 
+```json
+{
+  "name": "login_otp_verification",
+  "language": "en",
+  "category": "AUTHENTICATION",
+  "addSecurityRecommendation": true,
+  "codeExpirationMinutes": 10,
+  "copyCodeButton": true
+}
+```
+
+<Note>
+  Authentication templates are **auto-generated by Meta** with standard security messaging. You only need to specify the three parameters above.
+</Note>
+
+### Example 3: Utility Template with Multiple Buttons
+
+```json
+{
+  "name": "order_confirmation",
+  "language": "en",
+  "category": "UTILITY",
+  "header": {
+    "type": "text",
+    "text": {
+      "content": "Order #{{1}}",
+      "variables": ["12345"]
+    }
+  },
+  "body": {
+    "text": "Hi {{1}},\n\nYour order has been confirmed!\n\nOrder ID: {{2}}\nTotal: {{3}}\nDelivery: {{4}}",
+    "variables": ["Sarah", "ORD-12345", "$99.99", "Dec 15, 2025"]
+  },
+  "footer": "Thank you for shopping with us",
+  "buttons": [
+    {
+      "type": "URL",
+      "text": "Track Order",
+      "url": "https://example.com/track"
+    },
+    {
+      "type": "PHONE_NUMBER",
+      "text": "Contact Support",
+      "phone_number": "+1234567890"
+    },
+    {
+      "type": "QUICK_REPLY",
+      "text": "Cancel Order"
+    }
+  ]
+}
+```
+
+### Example 4: Simple Text Template
+
+```json
+{
+  "name": "appointment_reminder",
+  "language": "en",
+  "category": "UTILITY",
+  "body": {
+    "text": "Reminder: Your appointment with {{1}} is scheduled for {{2}} at {{3}}. Please arrive 10 minutes early.",
+    "variables": ["Dr. Smith", "December 15, 2025", "2:00 PM"]
+  },
+  "footer": "Reply CANCEL to reschedule"
+}
+```
+
+### Example 5: URL Button with Variable
+
+```json
+{
+  "name": "personalized_offer",
+  "language": "en",
+  "category": "MARKETING",
+  "body": {
+    "text": "Exclusive offer for {{1}}! Your discount code {{2}} is ready. Click below to redeem.",
+    "variables": ["VIP Members", "VIP20"]
+  },
+  "buttons": [
+    {
+      "type": "URL",
+      "text": "Redeem Now",
+      "url": "https://example.com/offer?code={{1}}",
+      "variables": ["VIP20"]
+    }
+  ]
+}
+```
+
+### Example 6: Video Header Template
+
+```json
+{
+  "name": "product_tutorial",
+  "language": "en",
+  "category": "MARKETING",
+  "header": {
+    "type": "media",
+    "media": {
+      "type": "video",
+      "file": "<binary_video_data>"
+    }
+  },
+  "body": {
+    "text": "Watch this quick tutorial on {{1}}! Learn how to get the most out of your purchase in just {{2}} minutes.",
+    "variables": ["our new feature", "5"]
+  },
+  "footer": "Need help? Contact support"
+}
+```
+
+### Example 7: Document Header Template
+
+```json
+{
+  "name": "invoice_delivery",
+  "language": "en",
+  "category": "UTILITY",
+  "header": {
+    "type": "media",
+    "media": {
+      "type": "document",
+      "file": "<binary_pdf_data>"
+    }
+  },
+  "body": {
+    "text": "Dear {{1}},\n\nPlease find your invoice #{{2}} attached. Amount due: {{3}}\n\nPayment due: {{4}}",
+    "variables": ["John Doe", "INV-001", "$150.00", "Dec 31, 2025"]
+  },
+  "footer": "Thank you for your business"
+}
+```
+
+---
+
+## Validation Rules
+
+<AccordionGroup>
+  <Accordion title="Name Rules">
+    - Must be unique in workspace
+    - Only lowercase letters and underscores
+    - Examples: ✅ `welcome_message`, `order_confirmation_v2`
+    - Invalid: ❌ `WelcomeMessage`, `order-confirmation`, `template 1`
+  </Accordion>
+
+  <Accordion title="Language Codes">
+    Must be valid ISO language code:
+    - English: `en`
+    - Spanish: `es`
+    - French: `fr`
+    - German: `de`
+    - Portuguese: `pt`
+    - Arabic: `ar`
+    - And more...
+  </Accordion>
+
+  <Accordion title="Header Rules">
+    **Text Header:**
+    - Max 60 characters
+    - Max 1 variable: `{{1}}`
+    - Cannot start/end with variable
+    - Example: ✅ `Welcome {{1}}`
+    - Invalid: ❌ `{{1}} Welcome`
+    
+    **Media Header:**
+    - Image: JPG/PNG, max 5MB (5120KB)
+    - Video: MP4, max 10MB (10240KB)
+    - Document: PDF, max 30MB (30720KB)
+  </Accordion>
+
+  <Accordion title="Body Rules">
+    - Required field
+    - Max 1024 characters
+    - Cannot start or end with variable
+    - Max 2 consecutive newlines (`\n\n` allowed, `\n\n\n` not allowed)
+    - Variables must match: if text has `{{1}}` and `{{2}}`, variables array must have exactly 2 items
+    - Variables are numbered sequentially: `{{1}}`, `{{2}}`, `{{3}}`, etc.
+  </Accordion>
+
+  <Accordion title="Footer Rules">
+    - Optional field
+    - Max 60 characters
+    - No newlines allowed
+    - No emojis allowed
+    - Plain text only
+  </Accordion>
+
+  <Accordion title="Button Rules">
+    - Max 3 buttons total (unsubscribe/block don't count toward limit)
+    - **URL Button**: 
+      - Requires `text` and `url`
+      - Can have 1 variable at end: `https://example.com/page?id={{1}}`
+      - Variable must be in `variables` array
+    - **PHONE_NUMBER Button**: 
+      - Requires `text` and `phone_number`
+      - Phone must include country code: `+1234567890`
+    - **QUICK_REPLY Button**: 
+      - Requires `text` only
+      - Max 3 quick replies per template
+    - **Button Order**: URL → Phone → Quick Reply
+  </Accordion>
+
+  <Accordion title="Authentication Templates">
+    - Only 3 fields required: `addSecurityRecommendation`, `codeExpirationMinutes`, `copyCodeButton`
+    - No custom header, body, footer, or buttons
+    - Meta auto-generates the template content
+    - `codeExpirationMinutes` range: 1-1440 (1 min to 24 hours)
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Response
+
+### Success (201 Created)
+
+```json
+{
+  "success": true,
+  "message": "Template created successfully and submitted to Meta for review.",
+  "data": {
+    "id": 1234,
+    "workspace_id": "9ca711b1-14ca-4bd5-9457-751db9c052ac",
+    "name": "welcome_template",
+    "language": "en",
+    "category": "MARKETING",
+    "status": "PENDING",
+    "provider_id": null,
+    "components": {
+      "header": { ... },
+      "body": { ... },
+      "footer": "...",
+      "buttons": [ ... ]
+    },
+    "created_at": "2025-12-03T10:00:00Z",
+    "updated_at": "2025-12-03T10:00:00Z"
+  }
+}
+```
+
+### Validation Error (422)
+
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "name": ["The name field must only contain lowercase letters and underscores."],
+    "body.variables": ["The number of variables must match the placeholders in the text."],
+    "header.media.file": ["The file size must not exceed 5120 kilobytes."]
+  }
+}
+```
+
+---
+
+## Template Status Flow
+
+After creation, templates go through this lifecycle:
+
+```
+PENDING → (Meta Review 5-30 mins) → APPROVED or REJECTED
+```
+
+Use [Sync Templates](/pages/endpoints/templates/sync) to update the status.
+
+---
+
+## Common Validation Errors
+
+| Error Message | Cause | Solution |
+|---------------|-------|----------|
+| "not_start_or_end_with_var" | Text starts/ends with variable | Remove variable from start/end |
+| "only_one_variable" | Header has more than 1 variable | Use max 1 variable in header |
+| "Variable count mismatch" | Variables array doesn't match placeholders | Count `{{1}}`, `{{2}}` in text and provide exact number |
+| "File too large" | Media exceeds size limit | Compress file (Image: 5MB, Video: 10MB, PDF: 30MB) |
+| "Invalid phone number" | Missing country code | Add country code: `+1234567890` |
+| "Template name exists" | Name already used | Choose unique name |
+| "no_more_than_two_consecutive_newlines" | Too many blank lines | Use max `\n\n` (2 newlines) |
+
+---
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Test Variables" icon="flask">
+    Always test with actual variable values before submission
+  </Card>
+  <Card title="Keep It Simple" icon="lightbulb">
+    Start with basic templates, add complexity gradually
+  </Card>
+  <Card title="Follow Meta Guidelines" icon="check">
+    Avoid promotional language in UTILITY templates
+  </Card>
+  <Card title="Use Descriptive Names" icon="tag">
+    Use clear names like `order_confirmation` not `template_1`
+  </Card>
+  <Card title="Optimize Media" icon="image">
+    Compress images/videos before upload
+  </Card>
+  <Card title="Plan Variables" icon="hashtag">
+    Map out all dynamic values before creating template
+  </Card>
+</CardGroup>
+
+---
+
+## Category Guidelines
+
+<Tabs>
+  <Tab title="MARKETING">
+    **Purpose**: Promotional messages, offers, announcements
+    
+    **Characteristics**:
+    - Can include unsubscribe/block buttons
+    - Subject to stricter Meta review
+    - Rate limits may apply
+    
+    **Examples**:
+    - Sales and promotions
+    - New product launches
+    - Event invitations
+    - Newsletter updates
+  </Tab>
+  
+  <Tab title="UTILITY">
+    **Purpose**: Transactional and account-related messages
+    
+    **Characteristics**:
+    - Faster approval
+    - Higher sending limits
+    - No promotional content
+    
+    **Examples**:
+    - Order confirmations
+    - Shipping updates
+    - Appointment reminders
+    - Account notifications
+  </Tab>
+  
+  <Tab title="AUTHENTICATION">
+    **Purpose**: One-time passwords and verification codes
+    
+    **Characteristics**:
+    - Auto-generated by Meta
+    - Highest priority delivery
+    - Built-in security features
+    
+    **Examples**:
+    - Login OTPs
+    - Password reset codes
+    - Two-factor authentication
+  </Tab>
+</Tabs>
+
+---
+
+## Example cURL Request
+
+```bash
+curl -X POST \
+  https://lancepilot.com/api/v3/workspaces/{workspace}/templates \
+  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "welcome_template",
+    "language": "en",
+    "category": "UTILITY",
+    "body": {
+      "text": "Welcome {{1}}! Your account is now active.",
+      "variables": ["John"]
+    }
+  }'
+```
+
+---
+
+<Tip>
+  **Need More Examples?**
+  
+  Check out [TEMPLATE_PAYLOADS.md](https://github.com/lancepilot/docs) for 15+ comprehensive template examples covering all use cases.
+</Tip>
+
+<Warning>
+  **Meta Review Time**: Templates typically take 5-30 minutes for approval. Use the [Sync endpoint](/pages/endpoints/templates/sync) to check status updates.
+</Warning>
+
+---
+
+## Next Steps
+
+After creating a template:
+
+1. **Wait for Review**: Meta reviews templates within 5-30 minutes
+2. **Sync Status**: Use [POST /templates/sync](/pages/endpoints/templates/sync)
+3. **Check Approval**: Use [GET /templates](/pages/endpoints/templates/list) to verify status
+4. **Send Messages**: Once approved, use [Send Template Message](/pages/endpoints/template-message/send-id)

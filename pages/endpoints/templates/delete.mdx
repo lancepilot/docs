@@ -2,3 +2,201 @@
 title: 'Delete Template'
 openapi: 'DELETE /workspaces/{workspace}/templates/{template}'
 ---
+
+## Overview
+
+Delete a WhatsApp message template from both your workspace and Meta's system.
+
+<Warning>
+  This action is **irreversible**. The template will be deleted from Meta and cannot be recovered.
+</Warning>
+
+---
+
+## Path Parameters
+
+| Parameter  | Type    | Required | Description         |
+| ---------- | ------- | -------- | ------------------- |
+| `workspace`| UUID    | Yes      | Workspace ID        |
+| `template` | integer | Yes      | Template ID to delete |
+
+---
+
+## Response
+
+### Success (200 OK)
+
+```json
+{
+  "success": true,
+  "message": "Template deleted successfully"
+}
+```
+
+### Not Found (404)
+
+```json
+{
+  "success": false,
+  "message": "Template not found"
+}
+```
+
+---
+
+## What Happens on Deletion?
+
+<Steps>
+  <Step title="Job Dispatched">
+    A background job `DeleteTemplateInApiProvider` is queued
+  </Step>
+  
+  <Step title="Meta Deletion">
+    The template is deleted from Meta's WhatsApp Business API
+  </Step>
+  
+  <Step title="Local Deletion">
+    The template is removed from your workspace database
+  </Step>
+</Steps>
+
+---
+
+## Example Usage
+
+### cURL
+
+```bash
+curl -X DELETE \
+  https://lancepilot.com/api/v3/workspaces/{workspace}/templates/1234 \
+  -H 'Authorization: Bearer YOUR_API_TOKEN'
+```
+
+### JavaScript
+
+```javascript
+async function deleteTemplate(workspaceId, templateId) {
+  const response = await fetch(
+    `https://lancepilot.com/api/v3/workspaces/${workspaceId}/templates/${templateId}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${YOUR_API_TOKEN}`
+      }
+    }
+  );
+  
+  const data = await response.json();
+  
+  if (data.success) {
+    console.log('Template deleted successfully');
+  } else {
+    console.error('Deletion failed:', data.message);
+  }
+}
+```
+
+### Python
+
+```python
+import requests
+
+def delete_template(workspace_id, template_id, api_token):
+    url = f"https://lancepilot.com/api/v3/workspaces/{workspace_id}/templates/{template_id}"
+    headers = {"Authorization": f"Bearer {api_token}"}
+    
+    response = requests.delete(url, headers=headers)
+    return response.json()
+
+# Usage
+result = delete_template("workspace-uuid", 1234, "your_token")
+print(result['message'])
+```
+
+---
+
+## Before Deleting
+
+<CardGroup cols={2}>
+  <Card title="Check Usage" icon="chart-line">
+    Verify if the template is currently being used in active campaigns
+  </Card>
+  <Card title="Backup Data" icon="database">
+    Save template configuration if you might need it later
+  </Card>
+  <Card title="Consider Alternatives" icon="lightbulb">
+    Could you update instead of delete? Use [Update Template](/pages/endpoints/templates/update)
+  </Card>
+  <Card title="Test First" icon="flask">
+    Test deletion on non-production templates first
+  </Card>
+</CardGroup>
+
+---
+
+## Important Notes
+
+<Note>
+  **Async Processing**
+  
+  Deletion from Meta happens in the background. The local database entry is removed immediately, but Meta deletion may take a few seconds.
+</Note>
+
+<Warning>
+  **Active Campaigns**
+  
+  If the template is used in active campaigns or automations, deleting it will cause those to fail. Check dependencies before deletion.
+</Warning>
+
+<Tip>
+  **Soft Delete Alternative**
+  
+  Consider implementing a soft delete pattern where templates are marked as archived instead of permanently deleted.
+</Tip>
+
+---
+
+## Related Endpoints
+
+- [Get Template](/pages/endpoints/templates/get) - View template details before deletion
+- [Get Templates](/pages/endpoints/templates/list) - List all templates to find the one to delete
+- [Update Template](/pages/endpoints/templates/update) - Alternative to deletion
+
+---
+
+## Error Scenarios
+
+| Error Code | Cause | Solution |
+|------------|-------|----------|
+| 404 | Template not found | Verify template ID exists |
+| 401 | Unauthorized | Check API token validity |
+| 403 | Insufficient permissions | Verify workspace access rights |
+| 500 | Server error | Contact support or retry later |
+
+---
+
+## Bulk Deletion Example
+
+```javascript
+async function bulkDeleteTemplates(workspaceId, templateIds) {
+  const results = [];
+  
+  for (const templateId of templateIds) {
+    try {
+      const result = await deleteTemplate(workspaceId, templateId);
+      results.push({ templateId, success: true, ...result });
+    } catch (error) {
+      results.push({ templateId, success: false, error: error.message });
+    }
+    
+    // Add delay to avoid rate limiting
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  
+  return results;
+}
+
+// Usage
+const deletedTemplates = await bulkDeleteTemplates('workspace-uuid', [1, 2, 3, 4]);
+console.log(`Deleted ${deletedTemplates.filter(r => r.success).length} templates`);
+```

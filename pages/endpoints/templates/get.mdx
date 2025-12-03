@@ -2,3 +2,156 @@
 title: 'Get Template'
 openapi: 'GET /workspaces/{workspace}/templates/{template}'
 ---
+
+## Overview
+
+Retrieve a specific WhatsApp message template by ID.
+
+---
+
+## Path Parameters
+
+| Parameter  | Type    | Required | Description         |
+| ---------- | ------- | -------- | ------------------- |
+| `workspace`| UUID    | Yes      | Workspace ID        |
+| `template` | integer | Yes      | Template ID         |
+
+---
+
+## Response
+
+### Success (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1234,
+    "workspace_id": "9ca711b1-14ca-4bd5-9457-751db9c052ac",
+    "name": "order_confirmation",
+    "language": "en",
+    "category": "UTILITY",
+    "status": "APPROVED",
+    "provider_id": "8949194595096852",
+    "components": {
+      "header": {
+        "type": "text",
+        "text": {
+          "content": "Order #{{1}}",
+          "variables": ["12345"]
+        }
+      },
+      "body": {
+        "text": "Hi {{1}},\n\nYour order has been confirmed! Estimated delivery: {{2}}",
+        "variables": ["John", "Dec 15, 2025"]
+      },
+      "footer": "Thank you for shopping with us",
+      "buttons": [
+        {
+          "type": "URL",
+          "text": "Track Order",
+          "url": "https://example.com/track"
+        },
+        {
+          "type": "PHONE_NUMBER",
+          "text": "Contact Support",
+          "phone_number": "+1234567890"
+        }
+      ]
+    },
+    "created_at": "2025-11-01T10:00:00Z",
+    "updated_at": "2025-11-15T14:30:00Z"
+  }
+}
+```
+
+### Not Found (404)
+
+```json
+{
+  "success": false,
+  "message": "Template not found"
+}
+```
+
+---
+
+## Component Structure
+
+The `components` object contains all template elements:
+
+### Header (Optional)
+
+**Text Header:**
+```json
+"header": {
+  "type": "text",
+  "text": {
+    "content": "Header text with {{1}}",
+    "variables": ["value"]
+  }
+}
+```
+
+**Media Header:**
+```json
+"header": {
+  "type": "media",
+  "media": {
+    "type": "image",  // or "video", "document"
+    "handle": "file_handle_from_meta"
+  }
+}
+```
+
+### Body (Required)
+
+```json
+"body": {
+  "text": "Message with {{1}} and {{2}}",
+  "variables": ["value1", "value2"]
+}
+```
+
+### Footer (Optional)
+
+```json
+"footer": "Footer text (max 60 chars)"
+```
+
+### Buttons (Optional)
+
+```json
+"buttons": [
+  {
+    "type": "URL",
+    "text": "Button Text",
+    "url": "https://example.com"
+  },
+  {
+    "type": "PHONE_NUMBER",
+    "text": "Call Us",
+    "phone_number": "+1234567890"
+  },
+  {
+    "type": "QUICK_REPLY",
+    "text": "Quick Reply"
+  }
+]
+```
+
+---
+
+## Usage Example
+
+```bash
+curl -X GET \
+  https://lancepilot.com/api/v3/workspaces/{workspace}/templates/1234 \
+  -H 'Authorization: Bearer YOUR_API_TOKEN'
+```
+
+---
+
+<Tip>
+  Use this endpoint to inspect template structure before sending messages with [Send Template Message](/pages/endpoints/template-message/send-id).
+</Tip>

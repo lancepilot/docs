@@ -1,0 +1,261 @@
+---
+title: 'Update Template'
+openapi: 'POST /workspaces/{workspace}/templates/{template}'
+---
+
+## Overview
+
+Update an existing WhatsApp message template. The template will be resubmitted to Meta for review.
+
+<Note>
+  - Language **cannot be changed** after template creation
+  - Category may be restricted for approved templates
+  - Media file only required when changing media type
+  - Template status changes to `UPDATING` during review
+</Note>
+
+---
+
+## Request Body Schema
+
+Same as [Create Template](/pages/endpoints/templates/add), with these differences:
+
+| Field        | Update Restrictions                                  |
+| ------------ | ---------------------------------------------------- |
+| `language`   | **Cannot be changed** (must match original)          |
+| `category`   | May be locked if template is approved                |
+| `header.media.file` | Required only when changing `header.media.type` |
+
+---
+
+## Example Payloads
+
+### Update Text Content Only
+
+```json
+{
+  "name": "welcome_template",
+  "language": "en",
+  "category": "MARKETING",
+  "body": {
+    "text": "Welcome {{1}}! Your account is now active. Enjoy {{2}}% off your first order!",
+    "variables": ["Customer", "20"]
+  },
+  "footer": "Valid for 30 days"
+}
+```
+
+### Update Header Media Type
+
+When changing media type (e.g., from image to video), the file is **required**:
+
+```json
+{
+  "name": "product_promo",
+  "language": "en",
+  "category": "MARKETING",
+  "header": {
+    "type": "media",
+    "media": {
+      "type": "video",
+      "file": "<binary_file_data>"
+    }
+  },
+  "body": {
+    "text": "Check out our latest product showcase!",
+    "variables": []
+  }
+}
+```
+
+### Keep Same Media Type
+
+When keeping the same media type, file is **optional**:
+
+```json
+{
+  "name": "product_promo",
+  "language": "en",
+  "category": "MARKETING",
+  "header": {
+    "type": "media",
+    "media": {
+      "type": "image"
+      // file not required if keeping same type
+    }
+  },
+  "body": {
+    "text": "Updated message text here!",
+    "variables": []
+  }
+}
+```
+
+### Add Buttons to Existing Template
+
+```json
+{
+  "name": "order_confirmation",
+  "language": "en",
+  "category": "UTILITY",
+  "body": {
+    "text": "Your order #{{1}} is confirmed!",
+    "variables": ["ORD-12345"]
+  },
+  "buttons": [
+    {
+      "type": "URL",
+      "text": "Track Order",
+      "url": "https://example.com/track"
+    },
+    {
+      "type": "PHONE_NUMBER",
+      "text": "Contact Support",
+      "phone_number": "+1234567890"
+    }
+  ]
+}
+```
+
+---
+
+## Response
+
+### Success (200 OK)
+
+```json
+{
+  "success": true,
+  "message": "Template updated successfully and submitted to Meta for review."
+}
+```
+
+### Validation Error (422)
+
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "language": ["Language cannot be changed after template creation."],
+    "header.media.file": ["The file field is required when changing media type."]
+  }
+}
+```
+
+---
+
+## Template Status Flow
+
+After updating:
+
+1. **PENDING** → Template without `provider_id` (treated as new creation)
+2. **UPDATING** → Existing template resubmitted for review
+3. **APPROVED** → After Meta approval
+4. **REJECTED** → If Meta rejects the changes
+
+Use the [Sync endpoint](/pages/endpoints/templates/sync) to refresh template statuses.
+
+---
+
+## Common Update Scenarios
+
+<AccordionGroup>
+  <Accordion title="Changing Template Text">
+    Update `body.text` and adjust `body.variables` array to match new placeholders:
+    
+    ```json
+    {
+      "name": "existing_template",
+      "language": "en",
+      "category": "MARKETING",
+      "body": {
+        "text": "New message with {{1}} and {{2}}",
+        "variables": ["value1", "value2"]
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Removing Header">
+    Set `header` to `null` or omit it:
+    
+    ```json
+    {
+      "name": "existing_template",
+      "language": "en",
+      "category": "UTILITY",
+      "header": null,
+      "body": {
+        "text": "Simple message without header",
+        "variables": []
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Changing Button URLs">
+    Update the entire `buttons` array:
+    
+    ```json
+    {
+      "name": "existing_template",
+      "language": "en",
+      "category": "MARKETING",
+      "body": {
+        "text": "Click below for updated link",
+        "variables": []
+      },
+      "buttons": [
+        {
+          "type": "URL",
+          "text": "New Link",
+          "url": "https://newdomain.com/page"
+        }
+      ]
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Adding/Removing Footer">
+    Simply include or omit the `footer` field:
+    
+    ```json
+    {
+      "name": "existing_template",
+      "language": "en",
+      "category": "UTILITY",
+      "body": {
+        "text": "Message content here",
+        "variables": []
+      },
+      "footer": "New footer text"
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Important Notes
+
+<Warning>
+  **Breaking Changes**
+  
+  - Changing `language` will fail validation
+  - Approved templates may have category restrictions
+  - Template name follows same rules as creation (lowercase + underscores only)
+</Warning>
+
+<Tip>
+  **Best Practices**
+  
+  - Test updates on duplicate templates first
+  - Keep variable placeholders consistent
+  - Use [Sync endpoint](/pages/endpoints/templates/sync) to monitor approval status
+  - Backup original template configuration before major updates
+</Tip>
+
+---
+
+For complete payload examples, see [TEMPLATE_PAYLOADS.md](https://github.com/lancepilot/docs/blob/main/TEMPLATE_PAYLOADS.md).

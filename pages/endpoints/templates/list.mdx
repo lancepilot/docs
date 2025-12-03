@@ -2,3 +2,101 @@
 title: 'Get Templates'
 openapi: 'GET /workspaces/{workspace}/templates'
 ---
+
+## Overview
+
+Retrieve all WhatsApp message templates for a workspace with pagination support.
+
+---
+
+## Query Parameters
+
+| Parameter  | Type    | Required | Default | Description                    |
+| ---------- | ------- | -------- | ------- | ------------------------------ |
+| `per_page` | integer | No       | 10      | Number of templates per page   |
+| `page`     | integer | No       | 1       | Page number                    |
+
+---
+
+## Response
+
+### Success (200 OK)
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1234,
+      "workspace_id": "9ca711b1-14ca-4bd5-9457-751db9c052ac",
+      "name": "welcome_template",
+      "language": "en",
+      "category": "MARKETING",
+      "status": "APPROVED",
+      "provider_id": "8949194595096852",
+      "components": {
+        "header": {
+          "type": "text",
+          "text": {
+            "content": "Welcome {{1}}",
+            "variables": ["Customer"]
+          }
+        },
+        "body": {
+          "text": "Thank you for joining us!",
+          "variables": []
+        },
+        "footer": "Reply STOP to unsubscribe",
+        "buttons": [
+          {
+            "type": "URL",
+            "text": "Visit Website",
+            "url": "https://example.com"
+          }
+        ]
+      },
+      "created_at": "2025-11-01T10:00:00Z",
+      "updated_at": "2025-11-15T14:30:00Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 5,
+    "per_page": 10,
+    "to": 10,
+    "total": 47
+  }
+}
+```
+
+---
+
+## Template Status Values
+
+| Status         | Description                                    |
+| -------------- | ---------------------------------------------- |
+| `PENDING`      | Submitted to Meta, awaiting review             |
+| `APPROVED`     | Approved by Meta, ready to use                 |
+| `REJECTED`     | Rejected by Meta, cannot be used               |
+| `UPDATING`     | Existing template being updated, under review  |
+
+---
+
+## Filter Examples
+
+### Get first page with 25 templates
+
+```bash
+GET /api/v3/workspaces/{workspace}/templates?per_page=25&page=1
+```
+
+### Get all approved templates
+
+Use the response data and filter by `status: "APPROVED"` on the client side, or use [Sync](/pages/endpoints/templates/sync) to update statuses.
+
+---
+
+<Tip>
+  Use the [Sync endpoint](/pages/endpoints/templates/sync) regularly to update template statuses from Meta.
+</Tip>

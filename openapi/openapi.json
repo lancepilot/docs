@@ -4597,7 +4597,7 @@
           {
             "name": "template",
             "in": "path",
-            "description": "",
+            "description": "ID of the template.",
             "required": true,
             "schema": {
               "type": "integer"
@@ -4613,6 +4613,245 @@
           },
           "404": {
             "$ref": "#/components/responses/404"
+          }
+        }
+      },
+      "post": {
+        "summary": "Update a template",
+        "description": "Update an existing template. Supports the same payload structure as template creation.",
+        "tags": [
+          "Templates"
+        ],
+        "parameters": [
+          {
+            "name": "workspace",
+            "in": "path",
+            "description": "ID of the workspace.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "template",
+            "in": "path",
+            "description": "ID of the template.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "language",
+                  "category",
+                  "body"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "login_otp_template"
+                  },
+                  "language": {
+                    "type": "string",
+                    "example": "en",
+                    "description": "Language cannot be changed after creation"
+                  },
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "MARKETING",
+                      "UTILITY",
+                      "AUTHENTICATION"
+                    ],
+                    "description": "Category may be restricted based on template status"
+                  },
+                  "header": {
+                    "oneOf": [
+                      {
+                        "type": "null",
+                        "description": "Option 1: No header"
+                      },
+                      {
+                        "type": "object",
+                        "description": "Option 2: Text Header",
+                        "required": [
+                          "type",
+                          "text"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "text"
+                            ]
+                          },
+                          "text": {
+                            "type": "object",
+                            "required": [
+                              "content"
+                            ],
+                            "properties": {
+                              "content": {
+                                "type": "string",
+                                "maxLength": 60
+                              },
+                              "variables": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "maxItems": 1
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "description": "Option 3: Media Header",
+                        "required": [
+                          "type",
+                          "media"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "media"
+                            ]
+                          },
+                          "media": {
+                            "type": "object",
+                            "required": [
+                              "type"
+                            ],
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "image",
+                                  "video",
+                                  "document"
+                                ]
+                              },
+                              "file": {
+                                "type": "string",
+                                "format": "binary",
+                                "description": "Required only when changing media type"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "body": {
+                    "type": "object",
+                    "required": [
+                      "text"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "maxLength": 1024
+                      },
+                      "variables": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "footer": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "buttons": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "type"
+                      ],
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "URL",
+                            "PHONE_NUMBER",
+                            "QUICK_REPLY"
+                          ]
+                        },
+                        "text": {
+                          "type": "string"
+                        },
+                        "phone_number": {
+                          "type": "string",
+                          "description": "Required for PHONE_NUMBER"
+                        },
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "Required for URL"
+                        },
+                        "variables": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "maxItems": 1,
+                          "description": "Only for URL buttons with {{1}} variable"
+                        }
+                      }
+                    }
+                  },
+                  "unsubscribeButton": {
+                    "type": "boolean"
+                  },
+                  "blockButton": {
+                    "type": "boolean"
+                  },
+                  "addSecurityRecommendation": {
+                    "type": "boolean",
+                    "description": "Required for AUTHENTICATION category"
+                  },
+                  "codeExpirationMinutes": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1440,
+                    "description": "Required for AUTHENTICATION category"
+                  },
+                  "copyCodeButton": {
+                    "type": "boolean",
+                    "description": "Required for AUTHENTICATION category"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Update200"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "description": "Validation failed"
           }
         }
       },

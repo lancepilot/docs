@@ -148,8 +148,9 @@
                   "pages/endpoints/templates/list",
                   "pages/endpoints/templates/add",
                   "pages/endpoints/templates/get",
-                  "pages/endpoints/templates/delete",
-                  "pages/endpoints/templates/sync"
+                  "pages/endpoints/templates/update",
+                  "pages/endpoints/templates/sync",
+                  "pages/endpoints/templates/delete"
                 ]
               },
               {
