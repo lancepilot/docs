@@ -587,7 +587,8 @@
             "description": "ID of the contact.",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -623,7 +624,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             },
             "description": "The ID of the contact to update"
           }
@@ -712,7 +714,8 @@
             "required": true,
             "description": "ID of the contact.",
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -813,7 +816,8 @@
             "description": "ID of the contact.",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -885,7 +889,8 @@
             "required": true,
             "description": "ID of the contact.",
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -1068,10 +1073,11 @@
           {
             "name": "contact",
             "in": "path",
-            "required": true,
             "description": "ID of the contact.",
+            "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -1130,7 +1136,8 @@
             "description": "ID of the contact.",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -1221,7 +1228,8 @@
             "description": "ID of the contact.",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -1384,7 +1392,8 @@
             "required": true,
             "description": "ID of the contact.",
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -1570,7 +1579,8 @@
             "required": true,
             "description": "ID of the contact.",
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -3348,7 +3358,8 @@
             "required": true,
             "description": "ID of the contact field.",
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
