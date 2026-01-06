@@ -1112,7 +1112,7 @@
         }
       }
     },
-    "/workspaces/{workspace}/contact/{contact}/toggle-label": {
+    "/workspaces/{workspace}/contacts/{contact}/toggle-label": {
       "post": {
         "summary": "Toggle Label on Contact",
         "description": "Attach or detach a label from a contact. If the label is already attached, it will be detached, and vice versa.",
@@ -1204,7 +1204,7 @@
         }
       }
     },
-    "/workspaces/{workspace}/contact/{contact}/toggle-tag": {
+    "/workspaces/{workspace}/contacts/{contact}/toggle-tag": {
       "post": {
         "summary": "Toggle Tag on Contact",
         "description": "Attach or detach a tag from a contact. If the tag is already attached, it will be detached, and vice versa.",
